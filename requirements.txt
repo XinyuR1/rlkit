@@ -34,4 +34,3 @@ moviepy
 # comet_ml
 pandas
 matplotlib
-#git+https://github.com/XinyuR1/doodad.git
