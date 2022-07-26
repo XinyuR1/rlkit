@@ -1,12 +1,21 @@
+## Linked repositories for IFT 3150
+- Doodad Library (fork version): https://github.com/XinyuR1/doodad
+- RLKIT Library (fork version): https://github.com/XinyuR1/rlkit
+- SMiRL-Code: https://github.com/Neo-X/SMiRL_Code
+
 ## Changes in the code
 
-### Currently Working on...
-- Install doodad, create docker image for rlkit.
-- Run experiment in the Laboratory (Atari).
-- Conf.py -> config.py (taken from SMiRL-Code)
+### Currently working on...
+- R̶u̶n̶ ̶d̶q̶n̶-̶A̶t̶a̶r̶i̶.̶p̶y̶ ̶l̶o̶c̶a̶l̶l̶y̶ ̶u̶s̶i̶n̶g̶ ̶d̶o̶o̶d̶a̶d̶ ̶(̶a̶n̶d̶ ̶h̶e̶r̶e̶_̶n̶o̶_̶d̶o̶o̶d̶a̶d̶)̶
+- Run dqn-Atari.py successfully using doodad and docker image locally
+- Run dqn-Atari.py successfully using doodad and ssh (lab-computer).
+
+### July 25th, 2022
+- Add [doodad_example.py](doodad_example.py) in order to test if doodad works locally.
+- Modify [dqn-Atari.py](dqn-Atari.py) by adding a doodad base log path (using "run_experiment" function from doodad).
 
 ### July 20th, 2022
-- Modify [conf.py](rlkit/launchers/config.py) with the local directory.
+- Modify [conf.py](rlkit/launchers/config.py) with the local directory. It has been changed to config.py.
 - Add Dockerfile taken from SMiRL-code library.
 
 ### July 19th, 2022
@@ -29,6 +38,18 @@ self._observations = np.zeros((max_replay_buffer_size, 1,84,84))
 self._next_obs = np.zeros((max_replay_buffer_size, 1,84,84))
 ```
 
+## My Build for the Virtual Environment
+```
+conda create --name env-rlkit python=3.7 pip
+conda activate env-rlkit
+pip install -r requirements.txt
+pip install -e ./
+cd ../doodad
+git clone git@github.com:XinyuR1/doodad.git
+pip install -e ./
+cd ../rlkit
+```
+
 ## Commands
 1. Understand the variables
 
@@ -43,7 +64,7 @@ self._next_obs = np.zeros((max_replay_buffer_size, 1,84,84))
   
 2. Visualize the image of the environment before and after preprocessing.
 ```
-python visualize.py <env-name>
+python atari_kit/visualize.py <env-name>
 ```
 
 3. Create an DQN-based algorithm experiment.
@@ -51,10 +72,7 @@ python visualize.py <env-name>
 # If Cartpole
 python dqn-Cartpole.py
 # If Atari
-python dqn-Atari.py <env-name>
-
-# After the experiment, change its name to exp<exp-number>
-python name_experiment.py <env-name>
+python dqn-Atari.py
 ```
 
 4. Plot the graph

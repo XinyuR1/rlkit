@@ -1,0 +1,166 @@
+[here_no_doodad] Epoch 0 finished
+-------------------------------------  ------------
+epoch                                   0
+replay_buffer/size                     20
+trainer/QF Loss                         3.46676e-06
+trainer/Y Predictions Mean              0.0468357
+trainer/Y Predictions Std               0.000223892
+trainer/Y Predictions Max               0.0474384
+trainer/Y Predictions Min               0.0463255
+expl/num steps total                   20
+expl/num paths total                    2
+expl/path length Mean                  10
+expl/path length Std                    0
+expl/path length Max                   10
+expl/path length Min                   10
+expl/Rewards Mean                       0
+expl/Rewards Std                        0
+expl/Rewards Max                        0
+expl/Rewards Min                        0
+expl/Returns Mean                       0
+expl/Returns Std                        0
+expl/Returns Max                        0
+expl/Returns Min                        0
+expl/Actions Mean                       1
+expl/Actions Std                        0
+expl/Actions Max                        1
+expl/Actions Min                        1
+expl/Num Paths                          1
+expl/Average Returns                    0
+expl/env_infos/final/ale.lives Mean     5
+expl/env_infos/final/ale.lives Std      0
+expl/env_infos/final/ale.lives Max      5
+expl/env_infos/final/ale.lives Min      5
+expl/env_infos/initial/ale.lives Mean   5
+expl/env_infos/initial/ale.lives Std    0
+expl/env_infos/initial/ale.lives Max    5
+expl/env_infos/initial/ale.lives Min    5
+expl/env_infos/ale.lives Mean           5
+expl/env_infos/ale.lives Std            0
+expl/env_infos/ale.lives Max            5
+expl/env_infos/ale.lives Min            5
+eval/num steps total                   50
+eval/num paths total                    5
+eval/path length Mean                  10
+eval/path length Std                    0
+eval/path length Max                   10
+eval/path length Min                   10
+eval/Rewards Mean                       0
+eval/Rewards Std                        0
+eval/Rewards Max                        0
+eval/Rewards Min                        0
+eval/Returns Mean                       0
+eval/Returns Std                        0
+eval/Returns Max                        0
+eval/Returns Min                        0
+eval/Actions Mean                       1
+eval/Actions Std                        0
+eval/Actions Max                        1
+eval/Actions Min                        1
+eval/Num Paths                          5
+eval/Average Returns                    0
+eval/env_infos/final/ale.lives Mean     5
+eval/env_infos/final/ale.lives Std      0
+eval/env_infos/final/ale.lives Max      5
+eval/env_infos/final/ale.lives Min      5
+eval/env_infos/initial/ale.lives Mean   5
+eval/env_infos/initial/ale.lives Std    0
+eval/env_infos/initial/ale.lives Max    5
+eval/env_infos/initial/ale.lives Min    5
+eval/env_infos/ale.lives Mean           5
+eval/env_infos/ale.lives Std            0
+eval/env_infos/ale.lives Max            5
+eval/env_infos/ale.lives Min            5
+time/data storing (s)                   0.000446
+time/evaluation sampling (s)            0.736452
+time/exploration sampling (s)           0.104189
+time/logging (s)                        0.004495
+time/saving (s)                         0.0256984
+time/training (s)                       0.345223
+time/epoch (s)                          1.2165
+time/total (s)                          6.36594
+Epoch                                   0
+-------------------------------------  ------------
+[here_no_doodad] Epoch 1 finished
+-------------------------------------  ------------
+epoch                                    1
+replay_buffer/size                      30
+trainer/QF Loss                          1.8275e-05
+trainer/Y Predictions Mean               0.0423663
+trainer/Y Predictions Std                0.00413934
+trainer/Y Predictions Max                0.0475067
+trainer/Y Predictions Min                0.0385859
+expl/num steps total                    30
+expl/num paths total                     3
+expl/path length Mean                   10
+expl/path length Std                     0
+expl/path length Max                    10
+expl/path length Min                    10
+expl/Rewards Mean                        0
+expl/Rewards Std                         0
+expl/Rewards Max                         0
+expl/Rewards Min                         0
+expl/Returns Mean                        0
+expl/Returns Std                         0
+expl/Returns Max                         0
+expl/Returns Min                         0
+expl/Actions Mean                        1.8
+expl/Actions Std                         0.6
+expl/Actions Max                         2
+expl/Actions Min                         0
+expl/Num Paths                           1
+expl/Average Returns                     0
+expl/env_infos/final/ale.lives Mean      5
+expl/env_infos/final/ale.lives Std       0
+expl/env_infos/final/ale.lives Max       5
+expl/env_infos/final/ale.lives Min       5
+expl/env_infos/initial/ale.lives Mean    5
+expl/env_infos/initial/ale.lives Std     0
+expl/env_infos/initial/ale.lives Max     5
+expl/env_infos/initial/ale.lives Min     5
+expl/env_infos/ale.lives Mean            5
+expl/env_infos/ale.lives Std             0
+expl/env_infos/ale.lives Max             5
+expl/env_infos/ale.lives Min             5
+eval/num steps total                   100
+eval/num paths total                    10
+eval/path length Mean                   10
+eval/path length Std                     0
+eval/path length Max                    10
+eval/path length Min                    10
+eval/Rewards Mean                        0
+eval/Rewards Std                         0
+eval/Rewards Max                         0
+eval/Rewards Min                         0
+eval/Returns Mean                        0
+eval/Returns Std                         0
+eval/Returns Max                         0
+eval/Returns Min                         0
+eval/Actions Mean                        2
+eval/Actions Std                         0
+eval/Actions Max                         2
+eval/Actions Min                         2
+eval/Num Paths                           5
+eval/Average Returns                     0
+eval/env_infos/final/ale.lives Mean      5
+eval/env_infos/final/ale.lives Std       0
+eval/env_infos/final/ale.lives Max       5
+eval/env_infos/final/ale.lives Min       5
+eval/env_infos/initial/ale.lives Mean    5
+eval/env_infos/initial/ale.lives Std     0
+eval/env_infos/initial/ale.lives Max     5
+eval/env_infos/initial/ale.lives Min     5
+eval/env_infos/ale.lives Mean            5
+eval/env_infos/ale.lives Std             0
+eval/env_infos/ale.lives Max             5
+eval/env_infos/ale.lives Min             5
+time/data storing (s)                    0.0005814
+time/evaluation sampling (s)             0.566633
+time/exploration sampling (s)            0.110304
+time/logging (s)                         0.0023262
+time/saving (s)                          0.0302956
+time/training (s)                        0.254995
+time/epoch (s)                           0.965136
+time/total (s)                           7.33758
+Epoch                                    1
+-------------------------------------  ------------
