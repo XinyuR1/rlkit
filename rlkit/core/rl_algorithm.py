@@ -81,7 +81,7 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
         return snapshot
 
     def _log_stats(self, epoch):
-        logger.log("Epoch {} finished".format(epoch), with_timestamp=True)
+        logger.log("Epoch {} finished".format(epoch), with_timestamp=False)
         logger.record_dict({"epoch": epoch})
 
         """

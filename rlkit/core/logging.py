@@ -170,7 +170,7 @@ class Logger(object):
     def get_log_tabular_only(self, ):
         return self._log_tabular_only
 
-    def log(self, s, with_prefix=True, with_timestamp=True):
+    def log(self, s, with_prefix=True, with_timestamp=False):
         out = s
         if with_prefix:
             out = self._prefix_str + out

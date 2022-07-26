@@ -4,7 +4,7 @@ import Pyro4
 from threading import Thread
 import time
 import numpy as np
-from rlkit.launchers import conf as config
+from rlkit.launchers import config as config
 
 Pyro4.config.SERIALIZERS_ACCEPTED = set(['pickle','json', 'marshal', 'serpent'])
 Pyro4.config.SERIALIZER='pickle'

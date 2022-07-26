@@ -140,7 +140,7 @@ dependencies:
     - jupyter-console==6.1.0
     - jupyter-core==4.6.3
     - keras-applications==1.0.8
-    - keras-preprocessing==1.1.0
+    - keras-atari_kit==1.1.0
     - kiwisolver==1.1.0
     - knack==0.7.2
     - lmdb==1.2.1

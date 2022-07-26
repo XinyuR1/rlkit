@@ -1,3 +1,74 @@
+## Changes in the code
+
+### Currently Working on...
+- Install doodad, create docker image for rlkit.
+- Run experiment in the Laboratory (Atari).
+- Conf.py -> config.py (taken from SMiRL-Code)
+
+### July 20th, 2022
+- Modify [conf.py](rlkit/launchers/config.py) with the local directory.
+- Add Dockerfile taken from SMiRL-code library.
+
+### July 19th, 2022
+- Add [requirements.txt](requirements.txt) taken from Neo-X's fork version of RLkit.
+  - Add/modify the following packages: `gym==0.18.0`, `gym[atari]`,`atari_py==0.2.6`, `opencv-python`, `pandas`, `matplotlib`
+- Add [dqn-Cartpole.py](dqn-Cartpole.py) and [dqn-Atari.py](dqn-Atari.py) for the experiments with DQN.
+- Add [atari_kit](atari_kit) repository which contains the preprocessing of images and the visualization of this process.
+- Add [name_experiment.py](name_experiment.py) in order to change the name of the experiment which initially contains the time of the experiment (which can be hard to track once we have many experiments).
+- Add [graph.py](graph.py) in order to plot the results after an experiment.
+- Modify [custom.py](rlkit/torch/networks/stochastic/custom.py)
+  - Add two CNN models for the Atari Experiments
+- Modify [simply_replay_buffer.py](rlkit/data_management/simple_replay_buffer.py)
+  - For now, I changed the dimensions to (1,84,84) since the preprocessed images for the Atari environment has a dimension of 84x84x1. Consult [preprocessing.py](atari_kit/preprocessing.py) for more info.
+  - If we experiment on the cartpole, then the dimension will be `observation_dim`.
+```
+#self._observations = np.zeros((max_replay_buffer_size, observation_dim))
+self._observations = np.zeros((max_replay_buffer_size, 1,84,84))
+
+#self._next_obs = np.zeros((max_replay_buffer_size, observation_dim))
+self._next_obs = np.zeros((max_replay_buffer_size, 1,84,84))
+```
+
+## Commands
+1. Understand the variables
+
+- `<env-name>`
+  - Cartpole: "Cartpole-v0"
+  - Atari: "Breakout-v0", "Pong-v0", "BeamRider-v0", "Seaquest-v0"
+- `<exp-number>`
+  - Represents the number of experiments for a specific environment.
+- `<metrics>` (integer)
+  - Select the metrics for the plot
+  - 8 for average returns, 10 for std returns and 50 for QF Loss
+  
+2. Visualize the image of the environment before and after preprocessing.
+```
+python visualize.py <env-name>
+```
+
+3. Create an DQN-based algorithm experiment.
+```
+# If Cartpole
+python dqn-Cartpole.py
+# If Atari
+python dqn-Atari.py <env-name>
+
+# After the experiment, change its name to exp<exp-number>
+python name_experiment.py <env-name>
+```
+
+4. Plot the graph
+```
+python graph.py <env-name> "./data/<env-name>/exp<exp-number>/progress.csv" <num-epochs> <metrics>
+```
+
+5. Run the policy
+```
+python run_policy.py "./data/<env-name>/exp<exp-number>/params.pkl"
+```
+
+
+*****************************
 # RLkit
 Reinforcement learning framework and algorithms implemented in PyTorch.
 
