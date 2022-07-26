@@ -5,20 +5,15 @@
 
 ## Changes in the code
 
-### Currently working on...
-- R̶u̶n̶ ̶d̶q̶n̶-̶A̶t̶a̶r̶i̶.̶p̶y̶ ̶l̶o̶c̶a̶l̶l̶y̶ ̶u̶s̶i̶n̶g̶ ̶d̶o̶o̶d̶a̶d̶ ̶(̶a̶n̶d̶ ̶h̶e̶r̶e̶_̶n̶o̶_̶d̶o̶o̶d̶a̶d̶)̶
-- Run dqn-Atari.py successfully using doodad and docker image locally
-- Run dqn-Atari.py successfully using doodad and ssh (lab-computer).
-
-### July 25th, 2022
+### July 25th, 2022: Running a file using doodad locally on Windows.
 - Add [doodad_example.py](doodad_example.py) in order to test if doodad works locally.
 - Modify [dqn-Atari.py](dqn-Atari.py) by adding a doodad base log path (using "run_experiment" function from doodad).
 
-### July 20th, 2022
+### July 20th, 2022: Prepare docker image.
 - Modify [conf.py](rlkit/launchers/config.py) with the local directory. It has been changed to config.py.
 - Add Dockerfile taken from SMiRL-code library.
 
-### July 19th, 2022
+### July 19th, 2022: Add Atari Experiments in rlkit library.
 - Add [requirements.txt](requirements.txt) taken from Neo-X's fork version of RLkit.
   - Add/modify the following packages: `gym==0.18.0`, `gym[atari]`,`atari_py==0.2.6`, `opencv-python`, `pandas`, `matplotlib`
 - Add [dqn-Cartpole.py](dqn-Cartpole.py) and [dqn-Atari.py](dqn-Atari.py) for the experiments with DQN.
