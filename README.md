@@ -1,9 +1,18 @@
+# RLKIT
 ## Linked repositories for IFT 3150
 - Doodad Library (fork version): https://github.com/XinyuR1/doodad
 - RLKIT Library (fork version): https://github.com/XinyuR1/rlkit
 - SMiRL-Code: https://github.com/Neo-X/SMiRL_Code
 
+## Work in Progress
+- Running a file using doodad and ssh on Windows.
+- Update the arguments for `graph.py`, `run_policy.py` and `visualize.py`.
+
 ## Changes in the code
+
+### July 27th, 2022: Running a file using doodad locally and docker on Windows.
+- Modify [Dockerfile](Dockerfile) by changing the name of the virtual environment (env-rlkit).
+- Add new mode: ``local_docker``.
 
 ### July 25th, 2022: Running a file using doodad locally on Windows.
 - Add [doodad_example.py](doodad_example.py) in order to test if doodad works locally.
@@ -51,8 +60,15 @@ cd ../rlkit
 - `<env-name>`
   - Cartpole: "Cartpole-v0"
   - Atari: "Breakout-v0", "Pong-v0", "BeamRider-v0", "Seaquest-v0"
-- `<exp-number>`
-  - Represents the number of experiments for a specific environment.
+
+
+- `<mode>`
+  - ``here_no_doodad``: Run the experiment without doodad library.
+  - ``local``: Run the experiment locally using doodad.
+  - ``local_docker``: Run the experiment locally using doodad and docker.
+
+
+
 - `<metrics>` (integer)
   - Select the metrics for the plot
   - 8 for average returns, 10 for std returns and 50 for QF Loss
@@ -72,12 +88,12 @@ python dqn-Atari.py
 
 4. Plot the graph
 ```
-python graph.py <env-name> "./data/<env-name>/exp<exp-number>/progress.csv" <num-epochs> <metrics>
+python graph.py <env-name> "./data/DQN-<env-name>/<mode>/progress.csv" <num-epochs> <metrics>
 ```
 
 5. Run the policy
 ```
-python run_policy.py "./data/<env-name>/exp<exp-number>/params.pkl"
+python run_policy.py "./data/DQN-<env-name>/<mode>/params.pkl"
 ```
 
 
