@@ -18,7 +18,8 @@ if __name__ == "__main__":
     run_experiment(
         foo,
         exp_name='test',
-        mode='local',
+        #mode='local',
+        mode='local_docker',
         variant=variant,
     )
 

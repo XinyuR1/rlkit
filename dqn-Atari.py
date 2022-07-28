@@ -111,7 +111,9 @@ if __name__ == "__main__":
         atari_env=env_name,
         algorithm="DQN",
         version="normal",
-        mode="local",
+        #mode="here_no_doodad",
+        #mode="local",
+        mode="local_docker",
         layer_size=256,
         replay_buffer_size=int(1E3), #1E6
         algorithm_kwargs=dict(
@@ -134,9 +136,5 @@ if __name__ == "__main__":
     # ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     #experiment(variant)
 
-    run_experiment(experiment,
-                   exp_name=f'DQN-{variant["atari_env"]}',
-                   variant=variant,
-                   mode=variant["mode"])
-                   #mode='here_no_doodad')
+    run_experiment(experiment, exp_name=f'DQN-{variant["atari_env"]}', variant=variant, mode=variant["mode"])
 

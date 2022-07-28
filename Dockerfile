@@ -107,9 +107,10 @@ RUN apt install software-properties-common
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt install python3.7 -y
 
-RUN conda create --name smirl python=3.7 pip
-RUN echo "source activate smirl" >> ~/.bashrc
-ENV PATH /opt/conda/envs/smirl/bin:$PATH
+#RUN conda create --name smirl python=3.7 pip
+RUN conda create --name env-rlkit python=3.7 pip
+RUN echo "source activate env-rlkit" >> ~/.bashrc
+ENV PATH /opt/conda/envs/env-rlkit/bin:$PATH
 
 RUN mkdir /root/playground
 
@@ -158,9 +159,10 @@ WORKDIR /root/playground
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+#RUN pip install git+https://github.com/XinyuR1/doodad.git
 
 RUN conda list
-# RUN pip3 install torch torchvision torchaudio
+#RUN pip3 install torch torchvision torchaudio
 #RUN conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
 #RUN conda install pytorch==1.6.0 torchvision=0.2.0 cudatoolkit=10.2.89 -c pytorch
 

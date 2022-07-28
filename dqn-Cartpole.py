@@ -17,8 +17,17 @@ from rlkit.launchers.launcher_util import setup_logger
 from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 
+from doodad.easy_launch.python_function import run_experiment
 
-def experiment(variant):
+
+def experiment(doodad_config, variant):
+    print('doodad_config.base_log_dir: ', doodad_config.base_log_dir)
+    name = f'DQN-{variant["atari_env"]}'
+    output_path = f'{doodad_config.base_log_dir}/{name}/{variant["mode"]}'
+
+    setup_logger(name, variant=variant,
+                 log_dir=output_path)
+
     expl_env = gym.make('CartPole-v0').env
     eval_env = gym.make('CartPole-v0').env
     obs_dim = expl_env.observation_space.low.size
@@ -70,14 +79,22 @@ def experiment(variant):
     algorithm.to(ptu.device)
     algorithm.train()
 
+    print("Experiment complete!")
+    print(f'Your experiment has been saved in the following directory:')
+    print(output_path)
+
 
 if __name__ == "__main__":
+    env_name = "Cartpole-v0"
+
     # noinspection PyTypeChecker
     variant = dict(
+        atari_env = env_name,
         algorithm="DQN",
         version="normal",
+        mode="local",
         layer_size=256,
-        replay_buffer_size=int(1E6),
+        replay_buffer_size=int(1E4),# originally 1e6
         algorithm_kwargs=dict(
             num_epochs=100, #originally 3000
             num_eval_steps_per_epoch=5000,
@@ -92,6 +109,11 @@ if __name__ == "__main__":
             learning_rate=3E-4,
         ),
     )
-    setup_logger('dqn-CartPole', variant=variant)
+
     # ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
-    experiment(variant)
+    #experiment(variant)
+
+    run_experiment(experiment,
+                   exp_name=f'DQN-{variant["atari_env"]}',
+                   variant=variant,
+                   mode=variant["mode"])
