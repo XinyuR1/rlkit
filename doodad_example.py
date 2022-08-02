@@ -13,15 +13,21 @@ def foo(doodad_config, variant):
 if __name__ == "__main__":
     variant = dict(
         learning_rate=1e-4,
-        parameter='awesome',
+        parameter='awesome'
     )
-    run_experiment(
-        foo,
-        exp_name='test',
-        #mode='local',
-        mode='local_docker',
-        variant=variant,
-    )
+
+    #mode = 'here_no_doodad'
+    #mode = 'local'
+    #mode = 'local_docker'
+    mode = 'ssh'
+
+    #use_gpu = True
+    use_gpu = False
+
+    ssh_host = 'blue'
+
+    run_experiment(foo, exp_name='test', use_gpu=False, mode=mode, variant=variant, ssh_host=ssh_host)
+
 
 
 
