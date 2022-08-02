@@ -166,5 +166,5 @@ RUN conda list
 #RUN conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
 #RUN conda install pytorch==1.6.0 torchvision=0.2.0 cudatoolkit=10.2.89 -c pytorch
 
-#RUN ls
-CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+RUN ls
+#CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
