@@ -104,7 +104,8 @@ def experiment(doodad_config, variant):
     print(output_path)
 
 if __name__ == "__main__":
-    env_name = get_choice_env()
+    #env_name = get_choice_env()
+    env_name = "Breakout-v0"
 
     # noinspection PyTypeChecker
     variant = dict(
@@ -113,7 +114,8 @@ if __name__ == "__main__":
         version="normal",
         #mode="here_no_doodad",
         #mode="local",
-        mode="local_docker",
+        #mode="local_docker",
+        mode="ssh",
         layer_size=256,
         replay_buffer_size=int(1E3), #1E6
         algorithm_kwargs=dict(
@@ -133,8 +135,12 @@ if __name__ == "__main__":
         ),
     )
 
-    # ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
+    ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     #experiment(variant)
 
-    run_experiment(experiment, exp_name=f'DQN-{variant["atari_env"]}', variant=variant, mode=variant["mode"])
+    run_experiment(experiment, 
+    exp_name=f'DQN-{variant["atari_env"]}', 
+    use_gpu=True,
+    ssh_host='blue',
+    variant=variant, mode=variant["mode"])
 

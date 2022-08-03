@@ -1,12 +1,12 @@
 ### Update this to the location you have saved the rlkit code.
-BASE_CODE_DIR = "C:/Users/ronni/Documents/PROJECTS/rlkit"
+BASE_CODE_DIR = "home/Documents/Github/rlkit"
 
 CODE_DIRS_TO_MOUNT = [
 ]
 NON_CODE_DIRS_TO_MOUNT = [
 ]
-LOCAL_LOG_DIR = "C:/Users/ronni/Documents/PROJECTS/rlkit/data"
-OUTPUT_DIR_FOR_DOODAD_TARGET = "C:/Users/ronni/Documents/PROJECTS/rlkit/data"
+LOCAL_LOG_DIR = f'{BASE_CODE_DIR}/data'
+OUTPUT_DIR_FOR_DOODAD_TARGET = f'{BASE_CODE_DIR}/data'
 
 DIR_AND_MOUNT_POINT_MAPPINGS = [
 ]
@@ -17,7 +17,7 @@ AWS Settings
 AWS_S3_PATH = 'TODO'
 
 # The docker image is looked up on dockerhub.com.
-DOODAD_DOCKER_IMAGE = 'rlkit:latest'
+DOODAD_DOCKER_IMAGE = 'TODO'
 INSTANCE_TYPE = 'c4.2xlarge'
 SPOT_PRICE = 0.3
 
