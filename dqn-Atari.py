@@ -112,10 +112,10 @@ if __name__ == "__main__":
         atari_env=env_name,
         algorithm="DQN",
         version="normal",
-        #mode="here_no_doodad",
+        mode="here_no_doodad",
         #mode="local",
         #mode="local_docker",
-        mode="ssh",
+        #mode="ssh",
         layer_size=256,
         replay_buffer_size=int(1E3), #1E6
         algorithm_kwargs=dict(
@@ -141,6 +141,6 @@ if __name__ == "__main__":
     run_experiment(experiment, 
     exp_name=f'DQN-{variant["atari_env"]}', 
     use_gpu=True,
-    ssh_host='blue',
+    #ssh_host='blue',
     variant=variant, mode=variant["mode"])
 
