@@ -2,9 +2,9 @@
 
 ARG UBUNTU_VERSION=18.04
 ARG ARCH=
-ARG CUDA=10.0
+ARG CUDA=11.3
 
-FROM nvidia/cudagl${ARCH:+-$ARCH}:${CUDA}-base-ubuntu${UBUNTU_VERSION} as base
+FROM nvidia/cudagl${ARCH:+-$ARCH}:${CUDA}.0-base-ubuntu${UBUNTU_VERSION} as base
 # ARCH and CUDA are specified again because the FROM directive resets ARGs
 # (but their default value is retained if set previously)
 
@@ -32,11 +32,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         cuda-command-line-tools-${CUDA/./-} \
-        cuda-cublas-${CUDA/./-} \
-        cuda-cufft-${CUDA/./-} \
-        cuda-curand-${CUDA/./-} \
-        cuda-cusolver-${CUDA/./-} \
-        cuda-cusparse-${CUDA/./-} \
+        #cuda-cublas-${CUDA/./-} \
+        #cuda-cufft-${CUDA/./-} \
+        #cuda-curand-${CUDA/./-} \
+        #cuda-cusolver-${CUDA/./-} \
+        #cuda-cusparse-${CUDA/./-} \
         curl \
         # libcudnn7=${CUDNN}+cuda${CUDA} \
         libfreetype6-dev \
