@@ -32,5 +32,6 @@ moviepy
 # comet_ml
 pandas
 matplotlib
-#torch
+torch
+torchvision
 #torchvision==0.2.0
