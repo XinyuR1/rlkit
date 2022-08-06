@@ -163,7 +163,7 @@ RUN pip install -r requirements.txt
 
 RUN conda list
 #RUN pip3 install torch torchvision torchaudio
-#RUN conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113
 #RUN conda install pytorch==1.6.0 torchvision=0.2.0 cudatoolkit=10.2.89 -c pytorch
 
 RUN ls

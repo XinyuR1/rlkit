@@ -24,13 +24,13 @@ gtimer==1.0.0b5
 boto3==1.4.8
 # ray==0.2.2
 path.py==10.3.1
-torch
 joblib==0.9.4
 opencv-python
-torchvision==0.2.0
 sk-video==1.1.10
 # git+https://github.com/vitchyr/multiworld.git
 moviepy
 # comet_ml
 pandas
 matplotlib
+#torch
+#torchvision==0.2.0
