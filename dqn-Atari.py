@@ -122,13 +122,13 @@ if __name__ == "__main__":
         version="normal",
         #mode="here_no_doodad",
         #mode="local",
-        #mode="local_docker",
-        mode="ssh",
+        mode="local_docker",
+        #mode="ssh",
         layer_size=256,
         replay_buffer_size=int(1E3), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=3000,
+            num_epochs=2,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
             num_eval_steps_per_epoch=50,
             num_trains_per_train_loop=10,
@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
     run_experiment(experiment, 
     exp_name=f'DQN-{variant["atari_env"]}', 
-    use_gpu=True,
-    ssh_host='blue',
+    #use_gpu=True,
+    #ssh_host='blue',
     variant=variant, mode=variant["mode"])
 

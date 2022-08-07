@@ -103,12 +103,11 @@ RUN mkdir /root/.ssh
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 WORKDIR /root/playground
 
-COPY . .
-#COPY requirements.txt requirements.txt
+#COPY . .
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-RUN pip install -e ./
 RUN conda list
 
 #CMD ["python", "cnn.py"]
-RUN ls
-#CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+#RUN ls
+CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
