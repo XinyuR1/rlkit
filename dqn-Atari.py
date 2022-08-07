@@ -108,6 +108,8 @@ def experiment(doodad_config, variant):
     if torch.cuda.is_available():
         print(f'How many GPUs? {torch.cuda.device_count()}')
         print(f'Device name? {torch.cuda.get_device_name(0)}')
+        print(f'Compatibilities: {torch.cuda.get_arch_list()}')
+        print(f'Version of Cuda: {torch.version.cuda}')
 
 if __name__ == "__main__":
     #env_name = get_choice_env()
@@ -121,12 +123,12 @@ if __name__ == "__main__":
         #mode="here_no_doodad",
         #mode="local",
         #mode="local_docker",
-        #mode="ssh",
+        mode="ssh",
         layer_size=256,
         replay_buffer_size=int(1E3), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=2,
+            num_epochs=3000,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
             num_eval_steps_per_epoch=50,
             num_trains_per_train_loop=10,
@@ -141,12 +143,12 @@ if __name__ == "__main__":
         ),
     )
 
-    #ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
+    ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     #experiment(variant)
 
     run_experiment(experiment, 
     exp_name=f'DQN-{variant["atari_env"]}', 
-    #use_gpu=True,
-    #ssh_host='blue',
+    use_gpu=True,
+    ssh_host='blue',
     variant=variant, mode=variant["mode"])
 

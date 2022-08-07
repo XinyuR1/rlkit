@@ -34,4 +34,5 @@ pandas
 matplotlib
 torch
 torchvision
+#git+https://github.com/xinyur1/doodad.git
 #torchvision==0.2.0
