@@ -103,6 +103,12 @@ def experiment(doodad_config, variant):
     print(f'Your experiment has been saved in the following directory:')
     print(output_path)
 
+    import torch
+    print(f'Is GPU detected? {torch.cuda.is_available()}')
+    if torch.cuda.is_available():
+        print(f'How many GPUs? {torch.cuda.device_count()}')
+        print(f'Device name? {torch.cuda.get_device_name(0)}')
+
 if __name__ == "__main__":
     #env_name = get_choice_env()
     env_name = "Breakout-v0"
@@ -112,7 +118,7 @@ if __name__ == "__main__":
         atari_env=env_name,
         algorithm="DQN",
         version="normal",
-        mode="here_no_doodad",
+        #mode="here_no_doodad",
         #mode="local",
         #mode="local_docker",
         #mode="ssh",
@@ -135,12 +141,12 @@ if __name__ == "__main__":
         ),
     )
 
-    ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
+    #ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     #experiment(variant)
 
     run_experiment(experiment, 
     exp_name=f'DQN-{variant["atari_env"]}', 
-    use_gpu=True,
+    #use_gpu=True,
     #ssh_host='blue',
     variant=variant, mode=variant["mode"])
 
