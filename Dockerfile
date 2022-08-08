@@ -96,18 +96,22 @@ RUN conda create --name env-rlkit python=3.7 pip
 RUN echo "source activate env-rlkit" >> ~/.bashrc
 ENV PATH /opt/conda/envs/env-rlkit/bin:$PATH
 
-RUN mkdir /root/playground
+#RUN mkdir /root/playground
 
 # make sure your domain is accepted
 RUN mkdir /root/.ssh
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
-WORKDIR /root/playground
+#WORKDIR /root/playground
 
-#COPY . .
-COPY requirements.txt requirements.txt
+
+COPY . .
+#COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+RUN pip install -e ./
 RUN conda list
+
+CMD ["python", "dqn-Atari.py"]
 
 #CMD ["python", "cnn.py"]
 #RUN ls
-CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+#CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
