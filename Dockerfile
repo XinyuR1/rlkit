@@ -101,17 +101,25 @@ ENV PATH /opt/conda/envs/env-rlkit/bin:$PATH
 # make sure your domain is accepted
 RUN mkdir /root/.ssh
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+WORKDIR /root/playground/
+RUN git clone https://github.com/XinyuR1/rlkit.git
+WORKDIR /root/playground/rlkit
+RUN pip install -r requirements.txt
+RUN pip install -e ./
+
+
 #WORKDIR /root/playground
 
 
-COPY . .
+#COPY . .
 #COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-RUN pip install -e ./
+#RUN pip install -r requirements.txt
+#RUN pip install -e ./
 RUN conda list
 
-CMD ["python", "dqn-Atari.py"]
+#CMD ["python", "dqn-Atari.py"]
 
 #CMD ["python", "cnn.py"]
-#RUN ls
+RUN ls
 #CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"

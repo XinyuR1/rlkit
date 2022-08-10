@@ -120,15 +120,15 @@ if __name__ == "__main__":
         atari_env=env_name,
         algorithm="DQN",
         version="normal",
-        mode="here_no_doodad",
+        #mode="here_no_doodad",
         #mode="local",
-        #mode="local_docker",
+        mode="local_docker",
         #mode="ssh",
         layer_size=256,
-        replay_buffer_size=int(1E3), #1E6
+        replay_buffer_size=int(1E5), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=2,
+            num_epochs=200,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
             num_eval_steps_per_epoch=50,
             num_trains_per_train_loop=10,
