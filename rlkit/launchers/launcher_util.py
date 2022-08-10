@@ -13,7 +13,7 @@ import dateutil.tz
 import numpy as np
 
 from rlkit.core import logger
-from rlkit.launchers import config
+from rlkit.launchers import config_private
 from rlkit.torch.pytorch_util import set_gpu_mode
 import rlkit.pythonplusplus as ppp
 
@@ -209,7 +209,7 @@ def create_log_dir(
     exp_name = create_exp_name(exp_prefix, exp_id=exp_id,
                                seed=seed)
     if base_log_dir is None:
-        base_log_dir = config.LOCAL_LOG_DIR
+        base_log_dir = config_private.LOCAL_LOG_DIR
     if include_exp_prefix_sub_dir:
         log_dir = osp.join(base_log_dir, exp_prefix.replace("_", "-"), exp_name)
     else:
@@ -259,7 +259,7 @@ def setup_logger(
     :return:
     """
     if git_infos is None:
-        git_infos = get_git_infos(config.CODE_DIRS_TO_MOUNT)
+        git_infos = get_git_infos(config_private.CODE_DIRS_TO_MOUNT)
     first_time = log_dir is None
     if first_time:
         log_dir = create_log_dir(exp_prefix, **create_log_dir_kwargs)
@@ -411,20 +411,20 @@ try:
     CODE_MOUNTS = [
         mount.MountLocal(local_dir=REPO_DIR, pythonpath=True),
     ]
-    for code_dir in config.CODE_DIRS_TO_MOUNT:
+    for code_dir in config_private.CODE_DIRS_TO_MOUNT:
         CODE_MOUNTS.append(mount.MountLocal(local_dir=code_dir, pythonpath=True))
 
     NON_CODE_MOUNTS = []
-    for non_code_mapping in config.DIR_AND_MOUNT_POINT_MAPPINGS:
+    for non_code_mapping in config_private.DIR_AND_MOUNT_POINT_MAPPINGS:
         NON_CODE_MOUNTS.append(mount.MountLocal(**non_code_mapping))
 
     SSS_CODE_MOUNTS = []
     SSS_NON_CODE_MOUNTS = []
-    if hasattr(config, 'SSS_DIR_AND_MOUNT_POINT_MAPPINGS'):
-        for non_code_mapping in config.SSS_DIR_AND_MOUNT_POINT_MAPPINGS:
+    if hasattr(config_private, 'SSS_DIR_AND_MOUNT_POINT_MAPPINGS'):
+        for non_code_mapping in config_private.SSS_DIR_AND_MOUNT_POINT_MAPPINGS:
             SSS_NON_CODE_MOUNTS.append(mount.MountLocal(**non_code_mapping))
-    if hasattr(config, 'SSS_CODE_DIRS_TO_MOUNT'):
-        for code_dir in config.SSS_CODE_DIRS_TO_MOUNT:
+    if hasattr(config_private, 'SSS_CODE_DIRS_TO_MOUNT'):
+        for code_dir in config_private.SSS_CODE_DIRS_TO_MOUNT:
             SSS_CODE_MOUNTS.append(
                 mount.MountLocal(local_dir=code_dir, pythonpath=True)
             )

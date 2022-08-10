@@ -134,7 +134,7 @@ GCP_FILE_TYPES_TO_SAVE = (
 # Overwrite with private configurations
 
 try:
-    from rlkit.launchers.config import *
+    from rlkit.launchers.config_private import *
 except ImportError as e:
     import os.path as osp
     command_to_run = "cp {} {}".format(

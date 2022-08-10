@@ -108,18 +108,13 @@ WORKDIR /root/playground/rlkit
 RUN pip install -r requirements.txt
 RUN pip install -e ./
 
+WORKDIR /root/playground/
+RUN git clone https://github.com/XinyuR1/doodad.git
+WORKDIR /root/playground/doodad
+RUN pip install -r requirements.txt
+RUN pip install -e ./
 
-#WORKDIR /root/playground
-
-
-#COPY . .
-#COPY requirements.txt requirements.txt
-#RUN pip install -r requirements.txt
-#RUN pip install -e ./
+WORKDIR /root/playground/rlkit
 RUN conda list
 
-#CMD ["python", "dqn-Atari.py"]
-
-#CMD ["python", "cnn.py"]
-RUN ls
 #CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
