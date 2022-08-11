@@ -103,6 +103,8 @@ def experiment(doodad_config, variant):
     print(f'Your experiment has been saved in the following directory:')
     print(output_path)
 
+    print('-------------------------')
+    print('GPU Information')
     import torch
     print(f'Is GPU detected? {torch.cuda.is_available()}')
     if torch.cuda.is_available():
@@ -128,7 +130,7 @@ if __name__ == "__main__":
         replay_buffer_size=int(1E5), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=200,
+            num_epochs=1000,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
             num_eval_steps_per_epoch=50,
             num_trains_per_train_loop=10,
