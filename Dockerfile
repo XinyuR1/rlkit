@@ -103,18 +103,20 @@ RUN mkdir /root/.ssh
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 WORKDIR /root/playground/
-RUN git clone https://github.com/XinyuR1/rlkit.git
-WORKDIR /root/playground/rlkit
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-RUN pip install -e ./
+#RUN git clone https://github.com/XinyuR1/rlkit.git
+#WORKDIR /root/playground/rlkit
+#RUN pip install -r requirements.txt
+#RUN pip install -e ./
 
-WORKDIR /root/playground/
-RUN git clone https://github.com/XinyuR1/doodad.git
-WORKDIR /root/playground/doodad
-RUN pip install -r requirements.txt
-RUN pip install -e ./
+#WORKDIR /root/playground/
+#RUN git clone https://github.com/XinyuR1/doodad.git
+#WORKDIR /root/playground/doodad
+#RUN pip install -r requirements.txt
+#RUN pip install -e ./
 
-WORKDIR /root/playground/rlkit
+#WORKDIR /root/playground/rlkit
 RUN conda list
 
 #CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
