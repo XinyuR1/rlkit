@@ -26,6 +26,8 @@ from rlkit.torch.networks.custom import ConvNet2
 from name_experiment import *
 import sys
 from doodad.easy_launch.python_function import run_experiment
+from rlkit.core import logger
+#from comet_ml import Experiment # only for here_no_doodad mode
 
 def make_env(env_name):
     env = gym.make(env_name)
@@ -130,26 +132,44 @@ if __name__ == "__main__":
         replay_buffer_size=int(1E5), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=1000,
+            num_epochs=3000,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
-            num_eval_steps_per_epoch=50,
-            num_trains_per_train_loop=10,
-            num_expl_steps_per_train_loop=10,
-            min_num_steps_before_training=10,
-            max_path_length=10,
-            batch_size=25,
+            num_eval_steps_per_epoch=5000,
+            num_trains_per_train_loop=1000,
+            num_expl_steps_per_train_loop=1000,
+            min_num_steps_before_training=1000,
+            max_path_length=1000,
+            batch_size=256,
         ),
         trainer_kwargs=dict(
             discount=0.99,
-            learning_rate=3E-4,
+            learning_rate=0.001, #3e-4 initially
         ),
     )
 
-    ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
-    #experiment(variant)
-
+    
+    """
+    exp = Experiment(
+        api_key = "CZJ6oI3PcAWndEc7BbDLnggSx",
+        project_name = "general",
+        workspace = "xinyur1",
+        auto_metric_logging = True,
+        auto_param_logging = True,
+        log_graph = True,
+        auto_metric_step_rate = True,
+        parse_args = True,
+        auto_histogram_weight_logging = True,
+        auto_histogram_activation_logging = True,
+        auto_histogram_epoch_rate = True
+        )
+    logger.comet_log = exp
+    exp.log_parameters(variant)
+    """
+    ptu.set_gpu_mode(True)
     run_experiment(experiment, 
-    exp_name=f'DQN-{variant["atari_env"]}', 
-    use_gpu=True,
-    variant=variant, mode=variant["mode"])
+        exp_name=f'DQN-{variant["atari_env"]}', 
+        use_gpu=True,
+        variant=variant, mode=variant["mode"]
+    )
+    # exp.end()
 

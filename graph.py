@@ -9,7 +9,7 @@ import sys
 
 def create_graph(env_name, csv_file, num_epochs, metrics):
     data = pd.read_csv(csv_file, index_col=0)
-    # Index 8 for average returns
+    # Index 5 for average returns
     # Index 10 for std returns
     # Index 50 for QF Loss
 
@@ -19,7 +19,7 @@ def create_graph(env_name, csv_file, num_epochs, metrics):
     plt.plot(epochs, avg_returns, linestyle='--', color='m')
     plt.xlabel('Epochs')
 
-    if metrics == 8:
+    if metrics == 5:
         metrics_name = 'Average Returns'
     elif metrics == 50:
         metrics_name = 'QF Loss'

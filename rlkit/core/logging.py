@@ -3,6 +3,7 @@ Based on rllab's logger.
 
 https://github.com/rll/rllab
 """
+from curses import keyname
 from enum import Enum
 from contextlib import contextmanager
 import numpy as np
@@ -31,7 +32,6 @@ def append_log(log_dict, to_add_dict, prefix=None):
     if prefix is not None:
         to_add_dict = add_prefix(to_add_dict, prefix=prefix)
     return log_dict.update(to_add_dict)
-
 
 class TerminalTablePrinter(object):
     def __init__(self):
@@ -104,10 +104,25 @@ class Logger(object):
 
         self._log_tabular_only = False
         self._header_printed = False
+
+        self._comet_log = None
+
         self.table_printer = TerminalTablePrinter()
 
     def reset(self):
         self.__init__()
+
+    @property
+    def comet_log(self):
+        return self._comet_log
+    
+    @comet_log.setter
+    def comet_log(self, log):
+        self._comet_log = log
+    
+    @comet_log.deleter
+    def comet_log(self):
+        del self._comet_log
 
     def _add_output(self, file_name, arr, fds, mode='a'):
         if file_name not in arr:
@@ -186,8 +201,15 @@ class Logger(object):
                 fd.flush()
             sys.stdout.flush()
 
+    epochs = 0
     def record_tabular(self, key, val):
+        global epochs
         self._tabular.append((self._tabular_prefix_str + str(key), str(val)))
+        if (self._comet_log is not None):
+            if key == 'epoch':
+                epochs = val
+                print(f'EPOCH: {epochs}')
+            self._comet_log.log_metrics({str(self._tabular_prefix_str) + str(key): val}, epoch=epochs)
 
     def record_dict(self, d, prefix=None):
         if prefix is not None:
