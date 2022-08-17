@@ -5,10 +5,48 @@
 - SMiRL-Code: https://github.com/Neo-X/SMiRL_Code
 
 ## Work in Progress
-- Running a file using doodad and ssh on Windows.
-- Update the arguments for `graph.py`, `run_policy.py` and `visualize.py`.
+- Running an experiment with ssh mode in``Breakout-v0`` or `Space-Invaders`.
 
 ## Changes in the code
+
+### August 14th, 2022: Add comet_ml
+- Modify [requirements.txt](requirements.txt): add ``comet_ml`` library.
+- Modify [logging.py](rlkit/core/logging.py):
+  - Add new attribute in the logger called ``self._comet_log`` (with setters and getters for Atari experiments)
+  - Change the ``record_tabular`` function the Logger class
+```python
+epochs = 0
+def record_tabular(self, key, val):
+   global epochs
+   self._tabular.append((self._tabular_prefix_str + str(key), str(val)))
+        if (self._comet_log is not None):
+            if key == 'epoch':
+                epochs = val
+                print(f'EPOCH: {epochs}')
+            self._comet_log.log_metrics({str(self._tabular_prefix_str) + str(key): val}, epoch=epochs)
+```
+
+### August 10th, 2022: Fix the GPU issue (GPU of the lab computer can't recognize the experiment).
+- Add new mode: ``ssh`` in order to connect to the lab computer.
+- Modify [requirements.txt](requirements.txt).
+  - There will be two choices: one for CPU and one for GPU
+  - The difference will be in the docker images. They will use the same dockerfile, but the libraries in the requirements file will be different (cpu or gpu).
+  - More changes in ``doodad`` library.
+
+```
+In the requirementx.txt file: 
+
+#FOR CPU (here_no_doodad, local and local_docker)
+torch
+torchvision
+
+#FOR GPU
+torch==1.10.0+cu113
+torchvision==0.11.1+cu113
+git+https://github.com/xinyur1/doodad.git
+
+--find-links https://download.pytorch.org/whl/cu113/torch_stable.html
+```
 
 ### July 27th, 2022: Running a file using doodad locally and docker on Windows.
 - Modify [Dockerfile](Dockerfile) by changing the name of the virtual environment (env-rlkit).
