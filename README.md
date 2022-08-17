@@ -3,6 +3,7 @@
 - Doodad Library (fork version): https://github.com/XinyuR1/doodad
 - RLKIT Library (fork version): https://github.com/XinyuR1/rlkit
 - SMiRL-Code: https://github.com/Neo-X/SMiRL_Code
+- Docker Images: https://hub.docker.com/repository/docker/xinyur1/rlkit
 
 ## Work in Progress
 - Running an experiment with ssh mode in``Breakout-v0`` or `Space-Invaders`.
