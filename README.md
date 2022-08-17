@@ -13,7 +13,7 @@
 - Modify [requirements.txt](requirements.txt): add ``comet_ml`` library.
 - Modify [logging.py](rlkit/core/logging.py):
   - Add new attribute in the logger called ``self._comet_log`` (with setters and getters for Atari experiments)
-  - Change the ``record_tabular`` function the Logger class
+  - Change the ``record_tabular`` function the Logger class by adding comet logs and options for epochs as x axis in the comet logs.
 ```python
 epochs = 0
 def record_tabular(self, key, val):
