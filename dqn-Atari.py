@@ -127,23 +127,23 @@ if __name__ == "__main__":
         #mode="here_no_doodad",
         #mode="local",
         #mode="local_docker",
-        mode="ssh",
+        #mode="ssh",
         layer_size=256,
         replay_buffer_size=int(1E5), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=3000,
+            num_epochs=2,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
-            num_eval_steps_per_epoch=5000,
-            num_trains_per_train_loop=1000,
-            num_expl_steps_per_train_loop=1000,
-            min_num_steps_before_training=1000,
-            max_path_length=1000,
-            batch_size=256,
+            num_eval_steps_per_epoch=50,
+            num_trains_per_train_loop=10,
+            num_expl_steps_per_train_loop=10,
+            min_num_steps_before_training=10,
+            max_path_length=50, # now 500
+            batch_size=25,
         ),
         trainer_kwargs=dict(
-            discount=0.99,
-            learning_rate=0.001, #3e-4 initially
+            discount=0.99, #0.99 initially
+            learning_rate=3E-4, #3e-4 initially
         ),
     )
 
@@ -169,6 +169,7 @@ if __name__ == "__main__":
     run_experiment(experiment, 
         exp_name=f'DQN-{variant["atari_env"]}', 
         use_gpu=True,
+        #use_gpu=False,
         variant=variant, mode=variant["mode"]
     )
     # exp.end()
