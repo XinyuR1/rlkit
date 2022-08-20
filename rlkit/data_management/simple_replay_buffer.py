@@ -16,20 +16,21 @@ class SimpleReplayBuffer(ReplayBuffer):
         env_info_sizes,
         replace = True,
     ):
+        
         self._observation_dim = observation_dim
         self._action_dim = action_dim
         self._max_replay_buffer_size = max_replay_buffer_size
 
         #self._observations = np.zeros((max_replay_buffer_size, observation_dim))
         print(self._observation_dim)
-        self._observations = np.zeros((max_replay_buffer_size, 4,84,84), dtype=np.float32)
+        self._observations = np.zeros((max_replay_buffer_size, 4,84,84), dtype='uint8')
 
         # It's a bit memory inefficient to save the observations twice,
         # but it makes the code *much* easier since you no longer have to
         # worry about termination conditions.
 
         #self._next_obs = np.zeros((max_replay_buffer_size, observation_dim))
-        self._next_obs = np.zeros((max_replay_buffer_size, 4,84,84), dtype=np.float32)
+        self._next_obs = np.zeros((max_replay_buffer_size, 4,84,84), dtype='uint8')
 
         self._actions = np.zeros((max_replay_buffer_size, action_dim))
         # Make everything a 2D np array to make it easier for other code to

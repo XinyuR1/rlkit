@@ -64,7 +64,7 @@ def experiment(doodad_config, variant):
 
 
     expl_env = make_env("BreakoutNoFrameskip-v4")
-    eval_env = make_env("BreakoutNoFrameskip-v4")
+    eval_env = make_env("SpaceInvadersNoFrameskip-v4")
 
     expl_n_actions = expl_env.action_space.n
 
@@ -123,29 +123,28 @@ def experiment(doodad_config, variant):
 
 if __name__ == "__main__":
     #env_name = get_choice_env()
-    env_name = "BreakoutNoFrameskip-v4"
+    env_name = "SpaceInvadersNoFrameskip-v4"
 
     # noinspection PyTypeChecker
     variant = dict(
         atari_env=env_name,
         algorithm="DQN",
         version="normal",
-        mode="here_no_doodad",
+        #mode="here_no_doodad",
         #mode="local",
         #mode="local_docker",
-        #mode="ssh",
-        layer_size=256,
+        mode="ssh",
         replay_buffer_size=int(1E6), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=2,
+            num_epochs=100,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
-            num_eval_steps_per_epoch=50,
-            num_trains_per_train_loop=10,
-            num_expl_steps_per_train_loop=10,
-            min_num_steps_before_training=10,
-            max_path_length=50, # now 500
-            batch_size=25,
+            num_eval_steps_per_epoch=50000,
+            num_trains_per_train_loop=50000,
+            num_expl_steps_per_train_loop=1000,
+            min_num_steps_before_training=1000,
+            max_path_length=500, # now 500
+            batch_size=32,
         ),
         trainer_kwargs=dict(
             discount=0.99, #0.99 initially
@@ -153,11 +152,11 @@ if __name__ == "__main__":
         ),
     )
 
-    #ptu.set_gpu_mode(True)
+    ptu.set_gpu_mode(True)
     run_experiment(experiment, 
         exp_name=f'DQN-{variant["atari_env"]}', 
-        #use_gpu=True,
-        use_gpu=False,
+        use_gpu=True,
+        #use_gpu=False,
         variant=variant, mode=variant["mode"]
     )
 
