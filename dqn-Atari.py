@@ -21,17 +21,23 @@ from rlkit.launchers.launcher_util import setup_logger
 from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 
-from atari_kit.preprocessing import PreprocessAtari
+#from atari_kit.preprocessing import PreprocessAtari
 from rlkit.torch.networks.custom import ConvNet2
 from name_experiment import *
-import sys
 from doodad.easy_launch.python_function import run_experiment
 from rlkit.core import logger
-#from comet_ml import Experiment # only for here_no_doodad mode
+import stable_baselines3.common.atari_wrappers as atari_wrappers
 
 def make_env(env_name):
     env = gym.make(env_name)
-    env = PreprocessAtari(env)
+    env = gym.wrappers.AtariPreprocessing(env, noop_max = 30, frame_skip = 4,
+                                     screen_size = 84, terminal_on_life_loss = False,
+                                     grayscale_obs = True,
+                                     grayscale_newaxis = False,
+                                     scale_obs = False)
+
+    env = gym.wrappers.FrameStack(env, 4)
+    env = atari_wrappers.ClipRewardEnv(env)
     # In Atari (preprocessed)
     # -> Image 84 x 84
     # -> 1 channel only
@@ -57,13 +63,13 @@ def experiment(doodad_config, variant):
     #setup_logger(f'DQN-{variant["atari_env"]}', variant=variant)
 
 
-    expl_env = make_env(variant["atari_env"])
-    eval_env = make_env(variant["atari_env"])
+    expl_env = make_env("BreakoutNoFrameskip-v4")
+    eval_env = make_env("BreakoutNoFrameskip-v4")
 
-    n_actions = expl_env.action_space.n
+    expl_n_actions = expl_env.action_space.n
 
-    qf = ConvNet2(n_actions)
-    target_qf = ConvNet2(n_actions)
+    qf = ConvNet2(expl_n_actions)
+    target_qf = ConvNet2(expl_n_actions)
 
     qf_criterion = nn.MSELoss()
     eval_policy = ArgmaxDiscretePolicy(qf)
@@ -117,19 +123,19 @@ def experiment(doodad_config, variant):
 
 if __name__ == "__main__":
     #env_name = get_choice_env()
-    env_name = "Breakout-v0"
+    env_name = "BreakoutNoFrameskip-v4"
 
     # noinspection PyTypeChecker
     variant = dict(
         atari_env=env_name,
         algorithm="DQN",
         version="normal",
-        #mode="here_no_doodad",
+        mode="here_no_doodad",
         #mode="local",
         #mode="local_docker",
         #mode="ssh",
         layer_size=256,
-        replay_buffer_size=int(1E5), #1E6
+        replay_buffer_size=int(1E6), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
             num_epochs=2,
@@ -147,30 +153,11 @@ if __name__ == "__main__":
         ),
     )
 
-    
-    """
-    exp = Experiment(
-        api_key = "CZJ6oI3PcAWndEc7BbDLnggSx",
-        project_name = "general",
-        workspace = "xinyur1",
-        auto_metric_logging = True,
-        auto_param_logging = True,
-        log_graph = True,
-        auto_metric_step_rate = True,
-        parse_args = True,
-        auto_histogram_weight_logging = True,
-        auto_histogram_activation_logging = True,
-        auto_histogram_epoch_rate = True
-        )
-    logger.comet_log = exp
-    exp.log_parameters(variant)
-    """
-    ptu.set_gpu_mode(True)
+    #ptu.set_gpu_mode(True)
     run_experiment(experiment, 
         exp_name=f'DQN-{variant["atari_env"]}', 
-        use_gpu=True,
-        #use_gpu=False,
+        #use_gpu=True,
+        use_gpu=False,
         variant=variant, mode=variant["mode"]
     )
-    # exp.end()
 
