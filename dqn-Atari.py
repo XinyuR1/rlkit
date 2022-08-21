@@ -22,12 +22,15 @@ from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 
 from atari_kit.preprocessing import PreprocessAtari
+from atari_kit.wrappers import *
 from rlkit.torch.networks.custom import ConvNet2
 from name_experiment import *
 from doodad.easy_launch.python_function import run_experiment
 from rlkit.core import logger
 import stable_baselines3.common.atari_wrappers as atari_wrappers
+import numpy as np
 
+"""
 def make_env(env_name):
     env = gym.make(env_name)
     env = PreprocessAtari(env)
@@ -36,7 +39,22 @@ def make_env(env_name):
     # -> 1 channel only
     # -> 4 actions
 
+    # Atari Preprocessing Wrapper
+    #env = gym.wrappers.AtariPreprocessing(env, noop_max = 30, frame_skip = 4,
+    #                                 screen_size = 84, terminal_on_life_loss = False,
+    #                                 grayscale_obs = True,
+    #                                 grayscale_newaxis = False,
+    #                                 scale_obs = False)
+
+    # Frame stacking
+    env_list = np.empty([1], dtype=object)
+    env_list[0] = env
+
+    env = SoftResetWrapper(env_list)
+    #env = gym.wrappers.FrameStack(env, 4)
+
     return env
+"""
 
 def experiment(doodad_config, variant):
 
@@ -55,8 +73,14 @@ def experiment(doodad_config, variant):
                 # log_dir: C:/Users/ronni/Documents/rlkit/data/DQN-Breakout/v0/exp1
     #setup_logger(f'DQN-{variant["atari_env"]}', variant=variant)
 
-    expl_env = make_env("SpaceInvaders-v0")
-    eval_env = make_env("SpaceInvaders-v0")
+    #expl_env = make_env("SpaceInvaders-v0")
+    #eval_env = make_env("SpaceInvaders-v0")
+
+    #expl_env = make_env("SpaceInvadersNoFrameskip-v4")
+    #eval_env = make_env("SpaceInvadersNoFrameskip-v4")
+
+    expl_env = make_env(["Breakout-v0", "BeamRider-v0"])
+    eval_env = make_env(["SpaceInvaders-v0"])
 
     expl_n_actions = expl_env.action_space.n
 
@@ -115,28 +139,28 @@ def experiment(doodad_config, variant):
 
 if __name__ == "__main__":
     #env_name = get_choice_env()
-    env_name = "SpaceInvaders-v0-2ndversion"
+    env_name = "Testing"
 
     # noinspection PyTypeChecker
     variant = dict(
         atari_env=env_name,
         algorithm="DQN",
         version="normal",
-        #mode="here_no_doodad",
+        mode="here_no_doodad",
         #mode="local",
         #mode="local_docker",
-        mode="ssh",
-        replay_buffer_size=int(1E6), #1E6
+        #mode="ssh",
+        replay_buffer_size=int(1E3), #1E6
         algorithm_kwargs=dict(
             # Original num_epochs: 3000
-            num_epochs=5000,
+            num_epochs=5,
             # 5000 - 1000 - 1000 - 1000 - 1000 - 256
-            num_eval_steps_per_epoch=5000,
-            num_trains_per_train_loop=1000,
-            num_expl_steps_per_train_loop=1000,
-            min_num_steps_before_training=1000,
-            max_path_length=1000, # now 500
-            batch_size=256,
+            num_eval_steps_per_epoch=50,
+            num_trains_per_train_loop=10,
+            num_expl_steps_per_train_loop=10,
+            min_num_steps_before_training=10,
+            max_path_length=50, # now 500
+            batch_size=25,
         ),
         trainer_kwargs=dict(
             discount=0.99, #0.99 initially
@@ -144,12 +168,12 @@ if __name__ == "__main__":
         ),
     )
 
-    ptu.set_gpu_mode(True)
+    #ptu.set_gpu_mode(True)
     run_experiment(experiment, 
         exp_name=f'DQN-{variant["atari_env"]}', 
-        use_gpu=True,
-        #use_gpu=False,
-        ssh_host='blue',
+        #use_gpu=True,
+        use_gpu=False,
+        ssh_host='green',
         variant=variant, mode=variant["mode"]
     )
 
