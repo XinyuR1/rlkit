@@ -2,7 +2,10 @@
 Run DQN on CartPole-v0.
 """
 
+from atari_kit.preprocessing import PreprocessAtari
 import gym
+from rlkit.core.simple_offline_rl_algorithm import SimpleOfflineRlAlgorithm
+from rlkit.torch.networks.custom import ConvNet2
 from torch import nn as nn
 
 from rlkit.exploration_strategies.base import \
@@ -19,10 +22,16 @@ from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 
 from doodad.easy_launch.python_function import run_experiment
 
+def make_env(env_name):
+    env = gym.make(env_name)
+    env = PreprocessAtari(env)
+    
+    return env
+
 
 def experiment(doodad_config, variant):
     print('doodad_config.base_log_dir: ', doodad_config.base_log_dir)
-    name = f'DQN-{variant["atari_env"]}'
+    name = variant["exp_name"]
     output_path = f'{doodad_config.base_log_dir}/{name}/{variant["mode"]}'
 
     setup_logger(name, variant=variant,
@@ -30,6 +39,10 @@ def experiment(doodad_config, variant):
 
     expl_env = gym.make('CartPole-v0').env
     eval_env = gym.make('CartPole-v0').env
+
+    #expl_env = make_env("SpaceInvaders-v0")
+    #eval_env = make_env("SpaceInvaders-v0")
+
     obs_dim = expl_env.observation_space.low.size
     action_dim = eval_env.action_space.n
 
@@ -43,6 +56,7 @@ def experiment(doodad_config, variant):
         input_size=obs_dim,
         output_size=action_dim,
     )
+    
     qf_criterion = nn.MSELoss()
     eval_policy = ArgmaxDiscretePolicy(qf)
     expl_policy = PolicyWrappedWithExplorationStrategy(
@@ -85,23 +99,21 @@ def experiment(doodad_config, variant):
 
 
 if __name__ == "__main__":
-    env_name = "Cartpole-v0"
-
     # noinspection PyTypeChecker
     variant = dict(
-        atari_env = env_name,
+        exp_name="Cartpole-v0",
         algorithm="DQN",
         version="normal",
-        mode="local",
+        mode="ssh",
         layer_size=256,
-        replay_buffer_size=int(1E4),# originally 1e6
+        replay_buffer_size=int(1E5),# originally 1e6
         algorithm_kwargs=dict(
-            num_epochs=100, #originally 3000
+            num_epochs=5000, #originally 3000
             num_eval_steps_per_epoch=5000,
             num_trains_per_train_loop=1000,
             num_expl_steps_per_train_loop=1000,
             min_num_steps_before_training=1000,
-            max_path_length=1000,
+            max_path_length=500,
             batch_size=256,
         ),
         trainer_kwargs=dict(
@@ -110,10 +122,12 @@ if __name__ == "__main__":
         ),
     )
 
-    # ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
+    ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
     #experiment(variant)
 
     run_experiment(experiment,
-                   exp_name=f'DQN-{variant["atari_env"]}',
+                   exp_name=variant["exp_name"],
                    variant=variant,
-                   mode=variant["mode"])
+                   mode=variant["mode"],
+                   use_gpu=True,
+                   ssh_host = 'green')

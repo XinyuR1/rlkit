@@ -29,11 +29,8 @@ class DQNTrainer(TorchTrainer):
         self.learning_rate = learning_rate
         self.soft_target_tau = soft_target_tau
         self.target_update_period = target_update_period
-        self.qf_optimizer = optim.RMSprop(self.qf.parameters(), lr = self.learning_rate)
-        #self.qf_optimizer = optim.Adam(
-        #    self.qf.parameters(),
-        #    lr=self.learning_rate,
-        #)
+        #self.qf_optimizer = optim.RMSprop(self.qf.parameters(), lr = self.learning_rate)
+        self.qf_optimizer = optim.Adam(self.qf.parameters(), lr=self.learning_rate)
         self.discount = discount
         self.reward_scale = reward_scale
         self.qf_criterion = qf_criterion or nn.MSELoss()

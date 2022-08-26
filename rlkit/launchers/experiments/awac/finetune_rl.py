@@ -2,7 +2,12 @@ import gym
 # import roboverse
 from rlkit.data_management.env_replay_buffer import EnvReplayBuffer
 from rlkit.data_management.split_buffer import SplitReplayBuffer
-from rlkit.envs.wrappers import NormalizedBoxEnv, StackObservationEnv, RewardWrapperEnv
+from rlkit.exploration_strategies.epsilon_greedy import EpsilonGreedy
+from rlkit.launchers.launcher_util import setup_logger
+from rlkit.policies.argmax import ArgmaxDiscretePolicy
+from rlkit.torch.networks.custom import ConvNet1
+from rlkit.torch.networks.mlp import Mlp
+#from rlkit.envs.wrappers import NormalizedBoxEnv, StackObservationEnv, RewardWrapperEnv
 import rlkit.torch.pytorch_util as ptu
 from rlkit.samplers.data_collector import MdpPathCollector, ObsDictPathCollector
 from rlkit.samplers.data_collector.step_collector import MdpStepCollector
@@ -16,11 +21,11 @@ from rlkit.torch.torch_rl_algorithm import (
 
 from rlkit.demos.source.hdf5_path_loader import HDF5PathLoader
 from rlkit.demos.source.mdp_path_loader import MDPPathLoader
-# from rlkit.visualization.video import save_paths, VideoSaveFunction
+#from rlkit.visualization.video import save_paths, VideoSaveFunction
 
-from multiworld.core.flat_goal_env import FlatGoalEnv
-from multiworld.core.image_env import ImageEnv
-from multiworld.core.gym_to_multi_env import GymToMultiEnv
+#from multiworld.core.flat_goal_env import FlatGoalEnv
+#from multiworld.core.image_env import ImageEnv
+#from multiworld.core.gym_to_multi_env import GymToMultiEnv
 from rlkit.util.hyperparameter import recursive_dictionary_update
 
 import torch
@@ -38,12 +43,18 @@ from rlkit.core import logger
 from rlkit.util.io import load_local_or_remote_file
 import pickle
 
+from torch import nn as nn
+from atari_kit.wrappers import *
+
 # from rlkit.envs.images import Renderer, InsertImageEnv, EnvRenderer
-from rlkit.envs.make_env import make
+#from rlkit.envs.make_env import make
 
 from rlkit.torch.networks import LinearTransform
 
 import random
+
+from stable_baselines3.common.vec_env import DummyVecEnv
+from atari_kit.preprocessing import PreprocessAtari
 
 ENV_PARAMS = {
     'HalfCheetah-v2': {
@@ -162,7 +173,7 @@ ENV_PARAMS = {
             is_demo=False,
             train_split=0.9,
         ),
-    },
+    }
 }
 
 
@@ -236,18 +247,27 @@ def get_normalization(replay_buffer):
     m = 1000.0 / reward_range
     return LinearTransform(m=float(m), b=0)
 
-def experiment(variant):
+def experiment(doodad_config, variant):
+    """
     if variant.get("pretrained_algorithm_path", False):
         resume(variant)
         return
+    """
+    
+    print('doodad_config.base_log_dir: ', doodad_config.base_log_dir)
+    name = variant["exp_name"]
+    output_path = f'{doodad_config.base_log_dir}/{name}/{variant["mode"]}'
 
-    normalize_env = variant.get('normalize_env', True)
-    env_id = variant.get('env_id', None)
-    env_class = variant.get('env_class', None)
-    env_kwargs = variant.get('env_kwargs', {})
+    setup_logger(name, variant=variant,
+                    log_dir=output_path)
 
-    expl_env = make(env_id, env_class, env_kwargs, normalize_env)
-    eval_env = make(env_id, env_class, env_kwargs, normalize_env)
+    #normalize_env = variant.get('normalize_env', True)
+    #env_id = variant.get('env_id', None)
+    #env_class = variant.get('env_class', None)
+    #env_kwargs = variant.get('env_kwargs', {})
+
+    expl_env = make_env(["SpaceInvaders-v0"])
+    eval_env = make_env(["SpaceInvaders-v0"])
 
     seed = int(variant["seed"])
     random.seed(seed)
@@ -256,26 +276,30 @@ def experiment(variant):
     eval_env.seed(seed)
     expl_env.seed(seed)
 
-    if variant.get('add_env_demos', False):
-        variant["path_loader_kwargs"]["demo_paths"].append(variant["env_demo_path"])
-    if variant.get('add_env_offpolicy_data', False):
-        variant["path_loader_kwargs"]["demo_paths"].append(variant["env_offpolicy_data_path"])
+    #if variant.get('add_env_demos', False):
+    #    variant["path_loader_kwargs"]["demo_paths"].append(variant["env_demo_path"])
+    #if variant.get('add_env_offpolicy_data', False):
+    #    variant["path_loader_kwargs"]["demo_paths"].append(variant["env_offpolicy_data_path"])
 
-    path_loader_kwargs = variant.get("path_loader_kwargs", {})
-    stack_obs = path_loader_kwargs.get("stack_obs", 1)
-    if stack_obs > 1:
-        expl_env = StackObservationEnv(expl_env, stack_obs=stack_obs)
-        eval_env = StackObservationEnv(eval_env, stack_obs=stack_obs)
+    #path_loader_kwargs = variant.get("path_loader_kwargs", {})
+    #stack_obs = path_loader_kwargs.get("stack_obs", 1)
+    #if stack_obs > 1:
+    #    expl_env = StackObservationEnv(expl_env, stack_obs=stack_obs)
+    #    eval_env = StackObservationEnv(eval_env, stack_obs=stack_obs)
 
+    #obs_dim = 84
     obs_dim = expl_env.observation_space.low.size
-    action_dim = eval_env.action_space.low.size
+    action_dim = eval_env.action_space.n
 
-    if hasattr(expl_env, 'info_sizes'):
-        env_info_sizes = expl_env.info_sizes
-    else:
-        env_info_sizes = dict()
+    #if hasattr(expl_env, 'info_sizes'):
+    #    env_info_sizes = expl_env.info_sizes
+    #else:
+    #    env_info_sizes = dict()
 
+    #
+    """
     qf_kwargs = variant.get("qf_kwargs", {})
+    
     qf1 = ConcatMlp(
         input_size=obs_dim + action_dim,
         output_size=1,
@@ -297,6 +321,7 @@ def experiment(variant):
         **qf_kwargs
     )
 
+    FOR VALUE FUNCTION, NOT SURE (TODO)
     vf_kwargs = variant.get("vf_kwargs", dict(hidden_sizes=[256, 256, ],))
     vf = ConcatMlp(
         input_size=obs_dim,
@@ -349,7 +374,8 @@ def experiment(variant):
                 policy=expl_policy,
             )
         else:
-            error
+            #error
+            print('error')
 
     replay_buffer_kwargs = dict(
         max_replay_buffer_size=variant['replay_buffer_size'],
@@ -392,7 +418,66 @@ def experiment(variant):
         **variant['algo_kwargs']
     )
     algorithm.to(ptu.device)
+    algorithm.train()
+    """
 
+    qf = ConvNet1(action_dim)
+    target_qf = ConvNet1(action_dim)
+    qf_criterion = nn.MSELoss()
+
+    # EVALUATION 
+    eval_policy = ArgmaxDiscretePolicy(qf)
+    eval_path_collector = MdpPathCollector(
+        eval_env,
+        eval_policy,
+    )
+
+    # EXPLORATION
+    expl_policy = PolicyWrappedWithExplorationStrategy(
+        EpsilonGreedy(expl_env.action_space),
+        eval_policy,
+    )
+    expl_path_collector = MdpPathCollector(
+        expl_env,
+        expl_policy,
+    )
+    
+    # REPLAY BUFFER
+    replay_buffer = EnvReplayBuffer(
+        variant['replay_buffer_size'],
+        expl_env,
+    )
+
+    # TRAINER CLASS: IQL HERE
+    trainer_class = variant.get("trainer_class", AWACTrainer)
+    trainer = trainer_class(
+        #env=eval_env,
+        #policy=policy,
+        #qf1=qf1,
+        #qf2=qf2,
+        #target_qf1=target_qf1,
+        #target_qf2=target_qf2,
+        #vf=vf,
+        qf = qf,
+        target_qf = target_qf,
+        qf_criterion = qf_criterion,
+        **variant['trainer_kwargs']
+    )
+
+    algorithm = TorchBatchRLAlgorithm(
+        trainer=trainer,
+        exploration_env=expl_env,
+        evaluation_env=eval_env,
+        exploration_data_collector=expl_path_collector,
+        evaluation_data_collector=eval_path_collector,
+        replay_buffer=replay_buffer,
+        max_path_length=variant['max_path_length'],
+        **variant['algo_kwargs']
+    )
+    algorithm.to(ptu.device)
+    algorithm.train()
+
+    """
     if variant.get("save_video", False):
         def get_img_env(env):
             renderer = EnvRenderer(**variant["renderer_kwargs"])
@@ -453,5 +538,7 @@ def experiment(variant):
         )
         buffer_path = osp.join(logger.get_snapshot_dir(), 'buffers.p')
         pickle.dump(buffers, open(buffer_path, "wb"))
+    """
+    
 
-    algorithm.train()
+    

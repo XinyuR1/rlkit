@@ -25,11 +25,24 @@ class TorchStochasticPolicy(
 ):
     def get_action(self, obs_np, ):
         actions = self.get_actions(obs_np[None])
-        return actions[0, :], {}
+        return actions, {}
 
     def get_actions(self, obs_np, ):
         dist = self._get_dist_from_np(obs_np)
         actions = dist.sample()
+
+        """
+        # For Cartpole - shape (1,2)
+        chosen_action = torch.argmax(actions).item()
+
+        if type(chosen_action) != int:
+            chosen_action = 0
+
+        print(actions)
+        print(chosen_action)
+
+        return chosen_action
+        """
         return elem_or_tuple_to_numpy(actions)
 
     def _get_dist_from_np(self, *args, **kwargs):

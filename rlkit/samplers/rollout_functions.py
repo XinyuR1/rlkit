@@ -108,6 +108,7 @@ def rollout(
         o_for_agent = preprocess_obs_for_policy_fn(o)
         a, agent_info = agent.get_action(o_for_agent, **get_action_kwargs)
 
+        #print(f'ACTION: {a}')
         if full_o_postprocess_func:
             full_o_postprocess_func(env, agent, o)
 

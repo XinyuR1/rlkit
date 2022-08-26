@@ -58,10 +58,10 @@ variant = dict(
         quantile=0.9,
         clip_score=100,
     ),
-    launcher_config=dict(
-        num_exps_per_instance=1,
-        region='us-west-2',
-    ),
+    #launcher_config=dict(
+    #    num_exps_per_instance=1,
+    #    region='us-west-2',
+    #),
 
     path_loader_class=HDF5PathLoader,
     path_loader_kwargs=dict(),
@@ -72,7 +72,7 @@ variant = dict(
     load_env_dataset_demos=True,
 
     normalize_env=False,
-    env_id='antmaze-umaze-v0',
+    env_id='Breakout-v0',
 
     seed=random.randint(0, 100000),
 )
@@ -80,7 +80,8 @@ variant = dict(
 def main():
     run_experiment(experiment,
         variant=variant,
-        exp_prefix='iql-antmaze-umaze-v0',
+        #exp_prefix='iql-antmaze-umaze-v0',
+        exp_name='IQL-Breakout-v0',
         mode="here_no_doodad",
         unpack_variant=False
     )

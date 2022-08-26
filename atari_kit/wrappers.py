@@ -1,6 +1,7 @@
 import gym
 import numpy as np
 from atari_kit.preprocessing import PreprocessAtari
+#import stable_baselines3.common.atari_wrappers as atari_wrappers
 
 # Taken from https://github.com/Neo-X/SMiRL_Code/blob/master/surprise/wrappers/obsresize.py#L305-L354 
 
@@ -44,6 +45,9 @@ class SoftResetWrapper(gym.Env):
         self._last_death = 0
         obs = self._env.reset()
 
+        for i in range(len(self._envs_list)):
+            self._envs_list[i].reset()
+
         random_number = np.random.randint(0, self._number_envs)
         print(f'Chosen random number: {random_number}')
 
@@ -66,6 +70,14 @@ def create_set(name_envs):
     for i in range(len(name_envs)):
         env = gym.make(name_envs[i])
         env = PreprocessAtari(env)
+        #env = gym.wrappers.AtariPreprocessing(env, noop_max = 30, frame_skip = 4,
+        #                             screen_size = 84, terminal_on_life_loss = False,
+        #                             grayscale_obs = True,
+        #                             grayscale_newaxis = False,
+        #                             scale_obs = False)
+        # Frame stacking
+        #env = gym.wrappers.FrameStack(env, 4)
+        #env = atari_wrappers.ClipRewardEnv(env)
         set_of_envs[i] = env
 
     return set_of_envs
@@ -74,6 +86,14 @@ def make_env(name_envs):
     if len(name_envs) == 1:
         env = gym.make(name_envs[0])
         env = PreprocessAtari(env)
+        #env = gym.wrappers.AtariPreprocessing(env, noop_max = 30, frame_skip = 4,
+        #                             screen_size = 84, terminal_on_life_loss = False,
+        #                             grayscale_obs = True,
+        #                             grayscale_newaxis = False,
+        #                             scale_obs = False)
+        # Frame stacking
+        #env = gym.wrappers.FrameStack(env, 4)
+        #env = atari_wrappers.ClipRewardEnv(env)
     else:
         set_of_envs = create_set(name_envs)
         env = SoftResetWrapper(set_of_envs)
@@ -82,7 +102,10 @@ def make_env(name_envs):
     
 # Testing with the wrapper
 if __name__ == "__main__":
-    env = make_env(["Assault-v0", "BeamRider-v0", "Riverraid-v0"])
+    env = make_env(["BeamRiderNoFrameskip-v4", "RiverraidNoFrameskip-v4", "AssaultNoFrameskip-v4", "SpaceInvadersNoFrameskip-v4"])
     print(env.reset())
-    env = make_env(["SpaceInvaders-v0"])
+    print(env.step(0))
     print(env.reset())
+    
+    #env = make_env(["SpaceInvaders-v0"])
+    #print(env.reset())

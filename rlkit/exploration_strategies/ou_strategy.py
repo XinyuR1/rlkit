@@ -34,9 +34,9 @@ class OUStrategy(RawExplorationStrategy):
             min_sigma = max_sigma
         self._min_sigma = min_sigma
         self._decay_period = decay_period
-        self.dim = np.prod(action_space.low.shape)
-        self.low = action_space.low
-        self.high = action_space.high
+        self.dim = np.prod(action_space.n)
+        self.low = 0
+        self.high = action_space.n - 1
         self.state = np.ones(self.dim) * self.mu
         self.reset()
 
