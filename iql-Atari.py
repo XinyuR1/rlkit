@@ -12,7 +12,13 @@ from rlkit.torch.dqn.iql_trainer import IQLTrainer
 import rlkit.torch.pytorch_util as ptu
 import random
 
+"""
+    TODO: Change the environments depending on the experiment you 
+    want to run.
+"""
+
 variant = dict(
+    
     # EXPERIMENT 3
     expl_env = ["Assault-v0"],
     eval_env = ["Assault-v0"],

@@ -33,6 +33,10 @@ def experiment(doodad_config, variant):
     setup_logger(name, variant=variant,
                  log_dir=output_path)
 
+    """
+    TODO: Change the environments depending on the experiment you 
+    want to run.
+    """
     # EXPERIMENT 1
     #expl_env = make_env(["Assault-v0"])
     #eval_env = make_env(["Assault-v0"])

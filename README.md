@@ -5,13 +5,60 @@
 - SMiRL-Code: https://github.com/Neo-X/SMiRL_Code
 - Docker Images: https://hub.docker.com/repository/docker/xinyur1/rlkit
 
-## References
-https://github.com/rail-berkeley/rlkit 
-https://github.com/montrealrobotics/doodad
-https://github.com/Neo-X/doodad 
-https://github.com/Neo-X/SMiRL_Code
-https://colab.research.google.com/github/GiannisMitr/DQN-Atari-Breakout/blob/master/dqn_atari_breakout.ipynb#scrollTo=_IA-czvUwbOn 
+## Running the Experiments using ssh
+The experiments were run in a Ubuntu Virtual Machine. Therefore, we use Linux as our operating system. We then used the lab computer's GPU in order to train the agent inside a Docker Container. This is possible due to `doodad`, a library that lets you launch different python files on other computers.
 
+For this project, we used `blue` and `green` servers from DIRO's lab computers.
+
+Note: In the lab computer, I installed Docker, Anaconda and Nvidia-Docker before doing the following steps.
+
+1. Change the configurations at doodad library in the following file: `doodad/easy_launch/config.py`. Consult my fork version of doodad in order to see my personal configurations as an example.
+
+2. For DQN Experiments (1 and 2), run `dqn-Atari.py`.
+```python
+"""
+    TODO: Change the environments depending on the experiment you 
+    want to run.
+"""
+
+# EXPERIMENT 1
+    expl_env = make_env(["Assault-v0"])
+    eval_env = make_env(["Assault-v0"])
+
+# EXPERIMENT 2
+    expl_env = make_env(["Carnival-v0", "SpaceInvaders-v0"])
+    eval_env = make_env(["Assault-v0"])
+```
+
+3. For IQL Experiments (3 and 4), run `iql-Atari.py`.
+```python
+"""
+    TODO: Change the environments depending on the experiment you 
+    want to run.
+"""
+
+# EXPERIMENT 3
+    expl_env = ["Assault-v0"],
+    eval_env = ["Assault-v0"],
+
+# EXPERIMENT 4
+    expl_env = ["SpaceInvaders-v0", "Carnival-v0"],
+    eval_env = ["Assault-v0"],
+```
+
+4. The results will be shown at the `comet_ml`. Here's the link to the four experiments that I've ran: https://www.comet.com/xinyur1/ift-3150/view/new/panels. If you want to change the configurations for `comet_ml`, change at the following file on `doodad`: `doodad/easy_launch/run_experiment.py`.
+
+## My Build for the Virtual Environment
+``` python
+conda create --name rlkit-cpu python=3.7 pip
+conda activate rlkit-cpu
+pip install -r requirements.txt
+pip install -e ./
+cd ../doodad
+git clone git@github.com:XinyuR1/doodad.git
+pip install -e ./
+cd ../rlkit
+```
 
 ## List of Changes for this Project
 This project uses this library's RL algorithm in order to run different experiments. Here are the list of changes that I've made compared to the original ``rlkit`` library:
@@ -165,59 +212,12 @@ git+https://github.com/xinyur1/doodad.git
 --find-links https://download.pytorch.org/whl/cu113/torch_stable.html
 ```
 
-
-
-
-###################################################################
-
--
-
-### July 20th, 2022: Prepare docker image.
-- Modify [conf.py](rlkit/launchers/config.py) with the local directory. It has been changed to config.py.
-- Add Dockerfile taken from SMiRL-code library.
-
-### July 19th, 2022: Add Atari Experiments in rlkit library.
-
-- Modify [custom.py](rlkit/torch/networks/stochastic/custom.py)
-  - Add two CNN models for the Atari Experiments
-
-
-## My Build for the Virtual Environment
-```
-conda create --name env-rlkit python=3.7 pip
-conda activate env-rlkit
-pip install -r requirements.txt
-pip install -e ./
-cd ../doodad
-git clone git@github.com:XinyuR1/doodad.git
-pip install -e ./
-cd ../rlkit
-```
-
-## Commands
-1. Understand the variables
-
-- `<env-name>`
-  - Cartpole: "Cartpole-v0"
-  - Atari: "Breakout-v0", "Pong-v0", "BeamRider-v0", "Seaquest-v0"
-
-- `<mode>`
-  - ``here_no_doodad``: Run the experiment without doodad library.
-  - ``local``: Run the experiment locally using doodad.
-  - ``local_docker``: Run the experiment locally using doodad and docker.
-
-2. Visualize the image of the environment before and after preprocessing.
-```
-python atari_kit/visualize.py <env-name>
-```
-
-3. Create an DQN-based algorithm experiment.
-```
-# If Cartpole
-python dqn-Cartpole.py
-# If Atari
-python dqn-Atari.py
-```
+## References
+- https://github.com/rail-berkeley/rlkit 
+- https://github.com/montrealrobotics/doodad
+- https://github.com/Neo-X/doodad 
+- https://github.com/Neo-X/SMiRL_Code
+- https://colab.research.google.com/github/GiannisMitr/DQN-Atari-Breakout/blob/master/dqn_atari_breakout.ipynb#scrollTo=_IA-czvUwbOn 
 
 *****************************
 # RLkit
