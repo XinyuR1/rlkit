@@ -201,6 +201,7 @@ class Logger(object):
                 fd.flush()
             sys.stdout.flush()
 
+    # CHANGE THE EPOCHS WHILE ADDING RESULTS TO COMET_ML.
     epochs = 0
     def record_tabular(self, key, val):
         global epochs

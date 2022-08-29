@@ -1,10 +1,8 @@
 """
 Visualize the Atari environment (before and after preprocessing)
-Choice of environments:
-1. "Breakout-v0"
-2. "Pong-v0"
-3. "BeamRider-v0"
-4. "Seaquest-v0"
+
+In order to run this file, use the following command:
+python visualize.py <env-name>
 """
 
 import gym
@@ -27,10 +25,6 @@ After preprocessing
 after_env = PreprocessAtari(before_env)
 after_env.reset()
 after_obs, _, done, _ = after_env.step(after_env.action_space.sample())
-
-
-#print(before_env.observation_space.shape)
-#print(after_env.observation_space.shape)
 
 plt.suptitle(sys.argv[1])
 plt.subplot(1, 2, 1)

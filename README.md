@@ -16,6 +16,109 @@ https://colab.research.google.com/github/GiannisMitr/DQN-Atari-Breakout/blob/mas
 ## List of Changes for this Project
 This project uses this library's RL algorithm in order to run different experiments. Here are the list of changes that I've made compared to the original ``rlkit`` library:
 
+### [atari_kit](atari_kit)
+#### [preprocessing.py](atari_kit/preprocessing.py)
+- Taken from https://colab.research.google.com/github/GiannisMitr/DQN-Atari-Breakout/blob/master/dqn_atari_breakout.ipynb#scrollTo=_IA-czvUwbOn
+- Inputs an Atari image and preprocess it into a gray-scale image with 64 x 64 size.
+
+#### [visualize.py](atari_kit/visualize.py)
+- Python file created for seeing the difference the original Atari image and the preprocessed one (using `preprocessing.py`).
+- Example using `Breakout-v0` as a given Atari environment.
+<p style="text-align:center;"><img src="atari_kit/Figure_1.png" width=300 height =200 class='center'></p>
+
+#### [wrappers.py](atari_kit/wrappers.py)
+- Modified from Neo-X's `Smirl_Code` wrappers function.
+- We changed the `reset` function from the `SoftResetWrapper`, so that the agent can play multiple Atari games in a single wrapper. We only added functions that creates a set of Atari environments while also preprocessing them.
+
+
+
+### [rlkit](rlkit)
+#### [core](rlkit/core)
+##### [logging.py](rlkit/core/logging.py)
+- Add new attribute in the logger called ``self._comet_log`` (with setters and getters for Atari experiments)
+- Change the ``record_tabular`` function the Logger class by adding comet logs and options for epochs as x axis in the comet logs.
+```python
+epochs = 0
+def record_tabular(self, key, val):
+   global epochs
+   self._tabular.append((self._tabular_prefix_str + str(key), str(val)))
+        if (self._comet_log is not None):
+            if key == 'epoch':
+                epochs = val
+                print(f'EPOCH: {epochs}')
+            self._comet_log.log_metrics({str(self._tabular_prefix_str) + str(key): val}, epoch=epochs)
+```
+
+#### [data_management](rlkit/data_management)
+##### [simple_replay_buffer.py](rlkit/data_management/simple_replay_buffer.py)
+- For the simple replay buffer class: we change the `self._observations` and `self._next_obs` to np.float16 type arrays.
+- Modified the `add_sample` function: Since images are 2-Dimensional arrays, we flatten it into a vector first before add in the buffer as a sample.
+
+```python
+def add_sample(self, observation, action, reward, next_observation,
+                   terminal, env_info, **kwargs):
+        flatten_obs = observation.reshape(-1)
+        flatten_next_obs = next_observation.reshape(-1)
+        # etc.
+```
+
+- Modified the `random_batch` function: switch self._size to `number` = 1000 due to offline RL.
+
+```python
+def random_batch(self, batch_size):
+        # replace number instead of self._size
+        number = 1000
+        indices = np.random.choice(number, size=batch_size, replace=self._replace or self._size < batch_size)
+        etc.
+```
+
+#### [exploration_strategies](rlkit/exploration_strategies)
+##### [epsilon_greedy.py](rlkit/exploration_strategies/epsilon_greedy.py)
+- Create two global variables so the value of epsilon can vary from 1 to 0.1 in 1 million steps. Initially, this class can only allow a fixed value of epsilon.
+
+```python
+number = 0
+epsilon = 1
+
+class EpsilonGreedy(RawExplorationStrategy):
+    """
+    Take a random discrete action with some probability.
+    """
+    def __init__(self, action_space, prob_random_action = 0.1):
+        self.prob_random_action = prob_random_action
+        self.action_space = action_space
+    
+    def get_action_from_raw_action(self, action, **kwargs):
+        global number
+        global epsilon
+        number += 1
+        threshold = 1000000
+
+        # The value of epsilon will decrease from 1 to 0.1 in
+        # 1 million steps (threshold)
+        if number <= threshold:
+            epsilon -= (1-0.1)/threshold
+        
+        if number % 1000 == 0:
+            print(f'NUMBER: {number}')
+            print(f'EPSILON VALUE: {epsilon}')
+```
+
+#### [launchers](rlkit/launchers)
+##### [finetune_rl.py](rlkit/launchers/experiments/awac/finetune_rl.py)
+- Modified the `experiment` function for IQL experiments. Instead of using actions that are continuous with SAC Algorithm, we used the DQN Algorithm to let the agent obtain discrete actions. The structure of the code remains the same as the ones in `dqn-Atari.py`, but the only difference is that we're using an IQL Trainer from the dqn repository.
+
+##### [config_private.py](rlkit/launchers/config_private.py)
+- Initially, this file was named `config.py`. The configurations for this project will be found on doodad repository, not in this file.
+
+#### [torch](rlkit/torch)
+##### [iql_trainer.py (from dqn)](rlkit/torch/dqn/iql_trainer.py)
+- We copied the `iql_trainer.py` from SAC folder and pasted to dqn folder. We then modified in order to use the DQN Algorithm since Atari games can be only manipulated with discrete actions.
+
+##### [custom.py](rlkit/torch/networks/custom.py)
+- Two CNN neural networks proposed from various research papers.
+- In this project, we used the 2nd CNN Model, a model architecture taken from https://arxiv.org/pdf/1312.5602.pdf.
+
 ### [Dockerfile](Dockerfile)
 - Taken from Neo-X's fork version of Rlkit.
 - We changed the name of the virtual environment by ``env-rlkit``.
@@ -67,20 +170,7 @@ git+https://github.com/xinyur1/doodad.git
 
 ###################################################################
 
-- Modify [logging.py](rlkit/core/logging.py):
-  - Add new attribute in the logger called ``self._comet_log`` (with setters and getters for Atari experiments)
-  - Change the ``record_tabular`` function the Logger class by adding comet logs and options for epochs as x axis in the comet logs.
-```python
-epochs = 0
-def record_tabular(self, key, val):
-   global epochs
-   self._tabular.append((self._tabular_prefix_str + str(key), str(val)))
-        if (self._comet_log is not None):
-            if key == 'epoch':
-                epochs = val
-                print(f'EPOCH: {epochs}')
-            self._comet_log.log_metrics({str(self._tabular_prefix_str) + str(key): val}, epoch=epochs)
-```
+-
 
 ### July 20th, 2022: Prepare docker image.
 - Modify [conf.py](rlkit/launchers/config.py) with the local directory. It has been changed to config.py.
@@ -88,19 +178,9 @@ def record_tabular(self, key, val):
 
 ### July 19th, 2022: Add Atari Experiments in rlkit library.
 
-- Add [atari_kit](atari_kit) repository which contains the preprocessing of images and the visualization of this process.
 - Modify [custom.py](rlkit/torch/networks/stochastic/custom.py)
   - Add two CNN models for the Atari Experiments
-- Modify [simply_replay_buffer.py](rlkit/data_management/simple_replay_buffer.py)
-  - For now, I changed the dimensions to (1,84,84) since the preprocessed images for the Atari environment has a dimension of 84x84x1. Consult [preprocessing.py](atari_kit/preprocessing.py) for more info.
-  - If we experiment on the cartpole, then the dimension will be `observation_dim`.
-```
-#self._observations = np.zeros((max_replay_buffer_size, observation_dim))
-self._observations = np.zeros((max_replay_buffer_size, 1,84,84))
 
-#self._next_obs = np.zeros((max_replay_buffer_size, observation_dim))
-self._next_obs = np.zeros((max_replay_buffer_size, 1,84,84))
-```
 
 ## My Build for the Virtual Environment
 ```

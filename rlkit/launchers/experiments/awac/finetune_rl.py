@@ -46,15 +46,10 @@ import pickle
 from torch import nn as nn
 from atari_kit.wrappers import *
 
-# from rlkit.envs.images import Renderer, InsertImageEnv, EnvRenderer
-#from rlkit.envs.make_env import make
-
 from rlkit.torch.networks import LinearTransform
 
 import random
 
-#from stable_baselines3.common.vec_env import DummyVecEnv
-from atari_kit.preprocessing import PreprocessAtari
 
 ENV_PARAMS = {
     'HalfCheetah-v2': {
@@ -248,11 +243,6 @@ def get_normalization(replay_buffer):
     return LinearTransform(m=float(m), b=0)
 
 def experiment(doodad_config, variant):
-    """
-    if variant.get("pretrained_algorithm_path", False):
-        resume(variant)
-        return
-    """
     
     print('doodad_config.base_log_dir: ', doodad_config.base_log_dir)
     name = variant["exp_name"]
@@ -260,11 +250,6 @@ def experiment(doodad_config, variant):
 
     setup_logger(name, variant=variant,
                     log_dir=output_path)
-
-    #normalize_env = variant.get('normalize_env', True)
-    #env_id = variant.get('env_id', None)
-    #env_class = variant.get('env_class', None)
-    #env_kwargs = variant.get('env_kwargs', {})
 
     expl_env = make_env(variant["expl_env"])
     eval_env = make_env(variant["eval_env"])
@@ -276,150 +261,8 @@ def experiment(doodad_config, variant):
     eval_env.seed(seed)
     expl_env.seed(seed)
 
-    #if variant.get('add_env_demos', False):
-    #    variant["path_loader_kwargs"]["demo_paths"].append(variant["env_demo_path"])
-    #if variant.get('add_env_offpolicy_data', False):
-    #    variant["path_loader_kwargs"]["demo_paths"].append(variant["env_offpolicy_data_path"])
-
-    #path_loader_kwargs = variant.get("path_loader_kwargs", {})
-    #stack_obs = path_loader_kwargs.get("stack_obs", 1)
-    #if stack_obs > 1:
-    #    expl_env = StackObservationEnv(expl_env, stack_obs=stack_obs)
-    #    eval_env = StackObservationEnv(eval_env, stack_obs=stack_obs)
-
-    #obs_dim = 84
     obs_dim = expl_env.observation_space.low.size
     action_dim = expl_env.action_space.n
-
-    #if hasattr(expl_env, 'info_sizes'):
-    #    env_info_sizes = expl_env.info_sizes
-    #else:
-    #    env_info_sizes = dict()
-
-    #
-    """
-    qf_kwargs = variant.get("qf_kwargs", {})
-    
-    qf1 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        **qf_kwargs
-    )
-    qf2 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        **qf_kwargs
-    )
-    target_qf1 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        **qf_kwargs
-    )
-    target_qf2 = ConcatMlp(
-        input_size=obs_dim + action_dim,
-        output_size=1,
-        **qf_kwargs
-    )
-
-    FOR VALUE FUNCTION, NOT SURE (TODO)
-    vf_kwargs = variant.get("vf_kwargs", dict(hidden_sizes=[256, 256, ],))
-    vf = ConcatMlp(
-        input_size=obs_dim,
-        output_size=1,
-        **vf_kwargs
-    )
-
-    policy_class = variant.get("policy_class", TanhGaussianPolicy)
-    policy_kwargs = variant['policy_kwargs']
-    policy = policy_class(
-        obs_dim=obs_dim,
-        action_dim=action_dim,
-        **policy_kwargs,
-    )
-
-    eval_policy = MakeDeterministic(policy)
-    eval_path_collector = MdpPathCollector(
-        eval_env,
-        eval_policy,
-    )
-
-    expl_policy = policy
-    exploration_kwargs =  variant.get('exploration_kwargs', {})
-    if exploration_kwargs:
-        if exploration_kwargs.get("deterministic_exploration", False):
-            expl_policy = MakeDeterministic(policy)
-
-        exploration_strategy = exploration_kwargs.get("strategy", None)
-        if exploration_strategy is None:
-            pass
-        elif exploration_strategy == 'ou':
-            es = OUStrategy(
-                action_space=expl_env.action_space,
-                max_sigma=exploration_kwargs['noise'],
-                min_sigma=exploration_kwargs['noise'],
-            )
-            expl_policy = PolicyWrappedWithExplorationStrategy(
-                exploration_strategy=es,
-                policy=expl_policy,
-            )
-        elif exploration_strategy == 'gauss_eps':
-            es = GaussianAndEpsilonStrategy(
-                action_space=expl_env.action_space,
-                max_sigma=exploration_kwargs['noise'],
-                min_sigma=exploration_kwargs['noise'],  # constant sigma
-                epsilon=0,
-            )
-            expl_policy = PolicyWrappedWithExplorationStrategy(
-                exploration_strategy=es,
-                policy=expl_policy,
-            )
-        else:
-            #error
-            print('error')
-
-    replay_buffer_kwargs = dict(
-        max_replay_buffer_size=variant['replay_buffer_size'],
-        env=expl_env,
-    )
-    replay_buffer = variant.get('replay_buffer_class', EnvReplayBuffer)(
-        **replay_buffer_kwargs,
-    )
-    demo_train_buffer = EnvReplayBuffer(
-        **replay_buffer_kwargs,
-    )
-    demo_test_buffer = EnvReplayBuffer(
-        **replay_buffer_kwargs,
-    )
-
-    trainer_class = variant.get("trainer_class", AWACTrainer)
-    trainer = trainer_class(
-        env=eval_env,
-        policy=policy,
-        qf1=qf1,
-        qf2=qf2,
-        target_qf1=target_qf1,
-        target_qf2=target_qf2,
-        vf=vf,
-        **variant['trainer_kwargs']
-    )
-
-    expl_path_collector = MdpPathCollector(
-        expl_env,
-        expl_policy,
-    )
-    algorithm = TorchBatchRLAlgorithm(
-        trainer=trainer,
-        exploration_env=expl_env,
-        evaluation_env=eval_env,
-        exploration_data_collector=expl_path_collector,
-        evaluation_data_collector=eval_path_collector,
-        replay_buffer=replay_buffer,
-        max_path_length=variant['max_path_length'],
-        **variant['algo_kwargs']
-    )
-    algorithm.to(ptu.device)
-    algorithm.train()
-    """
 
     qf = ConvNet2(action_dim)
     target_qf = ConvNet2(action_dim)
@@ -451,13 +294,6 @@ def experiment(doodad_config, variant):
     # TRAINER CLASS: IQL HERE
     trainer_class = variant.get("trainer_class", AWACTrainer)
     trainer = trainer_class(
-        #env=eval_env,
-        #policy=policy,
-        #qf1=qf1,
-        #qf2=qf2,
-        #target_qf1=target_qf1,
-        #target_qf2=target_qf2,
-        #vf=vf,
         qf = qf,
         target_qf = target_qf,
         qf_criterion = qf_criterion,
@@ -476,69 +312,6 @@ def experiment(doodad_config, variant):
     )
     algorithm.to(ptu.device)
     algorithm.train()
-
-    """
-    if variant.get("save_video", False):
-        def get_img_env(env):
-            renderer = EnvRenderer(**variant["renderer_kwargs"])
-            img_env = InsertImageEnv(GymToMultiEnv(env), renderer=renderer)
-
-        image_eval_env = ImageEnv(GymToMultiEnv(eval_env), **variant["image_env_kwargs"])
-        # image_eval_env = get_img_env(eval_env)
-        image_eval_path_collector = ObsDictPathCollector(
-            image_eval_env,
-            eval_policy,
-            observation_key="state_observation",
-        )
-        image_expl_env = ImageEnv(GymToMultiEnv(expl_env), **variant["image_env_kwargs"])
-        # image_expl_env = get_img_env(expl_env)
-        image_expl_path_collector = ObsDictPathCollector(
-            image_expl_env,
-            expl_policy,
-            observation_key="state_observation",
-        )
-        video_func = VideoSaveFunction(
-            image_eval_env,
-            variant,
-            image_expl_path_collector,
-            image_eval_path_collector,
-        )
-        algorithm.post_train_funcs.append(video_func)
-    if variant.get('save_paths', False):
-        algorithm.post_train_funcs.append(save_paths)
-    if variant.get('load_demos', False):
-        path_loader_class = variant.get('path_loader_class', MDPPathLoader)
-        path_loader = path_loader_class(trainer,
-            replay_buffer=replay_buffer,
-            demo_train_buffer=demo_train_buffer,
-            demo_test_buffer=demo_test_buffer,
-            **path_loader_kwargs
-        )
-        path_loader.load_demos()
-    if variant.get('load_env_dataset_demos', False):
-        path_loader_class = variant.get('path_loader_class', HDF5PathLoader)
-        path_loader = path_loader_class(trainer,
-            replay_buffer=replay_buffer,
-            demo_train_buffer=demo_train_buffer,
-            demo_test_buffer=demo_test_buffer,
-            **path_loader_kwargs
-        )
-        import d4rl
-        dataset = d4rl.qlearning_dataset(expl_env)
-        # dataset = expl_env.get_dataset()
-        path_loader.load_demos(dataset)
-        if variant.get('normalize_rewards_by_return_range'):
-            normalizer = get_normalization(replay_buffer)
-            trainer.reward_transform = normalizer
-    if variant.get('save_initial_buffers', False):
-        buffers = dict(
-            replay_buffer=replay_buffer,
-            demo_train_buffer=demo_train_buffer,
-            demo_test_buffer=demo_test_buffer,
-        )
-        buffer_path = osp.join(logger.get_snapshot_dir(), 'buffers.p')
-        pickle.dump(buffers, open(buffer_path, "wb"))
-    """
     
 
     

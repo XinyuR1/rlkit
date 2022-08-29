@@ -1,12 +1,14 @@
 """
 Preprocessing Atari Images
+
+Directly taken from https://colab.research.google.com/github/GiannisMitr/DQN-Atari-Breakout/blob/master/dqn_atari_breakout.ipynb#scrollTo=_IA-czvUwbOn
 """
 
 from gym.core import ObservationWrapper
 from gym.spaces import Box
 import cv2
 
-# https://colab.research.google.com/github/GiannisMitr/DQN-Atari-Breakout/blob/master/dqn_atari_breakout.ipynb#scrollTo=_IA-czvUwbOn
+# Modify the Atari image into a gray-scale style image with a size of 84x84 with 1 channel.
 class PreprocessAtari(ObservationWrapper):
     def __init__(self, env):
         """A gym wrapper that crops, scales image into the desired shapes and optionally grayscales it."""

@@ -1,9 +1,17 @@
+"""
+Create wrappers for the inputs of the Atari Experiments
+
+Modified from https://github.com/Neo-X/SMiRL_Code/blob/master/surprise/wrappers/obsresize.py#L305-L354 
+"""
+
+
 import gym
 import numpy as np
 from atari_kit.preprocessing import PreprocessAtari
-#import stable_baselines3.common.atari_wrappers as atari_wrappers
 
-# Taken from https://github.com/Neo-X/SMiRL_Code/blob/master/surprise/wrappers/obsresize.py#L305-L354 
+# We want to create a set of environments for the agent to train. 
+# In other words, the agent learns from multiple atari games
+# in a single wrapper.
 
 class SoftResetWrapper(gym.Env):
     def __init__(self, envs_list, max_time = 300, initial = 0):
@@ -24,8 +32,6 @@ class SoftResetWrapper(gym.Env):
         info["life_length_avg"] = self._last_death
         if (envdone):
             obs_ = self.reset()
-            ### Trick to make "death" more surprising...
-            #   info["life_length"] = self._last_death
             info["death"] = 1
             self._last_death = 0
             obs = np.random.rand(*obs_.shape)
@@ -36,6 +42,7 @@ class SoftResetWrapper(gym.Env):
         envdone = self._time >= self._max_time
         return obs, env_rew, envdone, info
 
+    # Reset lets the agent to switch into a new Atari game.
     def reset(self):
         '''
         Reset the wrapped env and the buffer
@@ -48,6 +55,8 @@ class SoftResetWrapper(gym.Env):
         for i in range(len(self._envs_list)):
             self._envs_list[i].reset()
 
+        # We use this random generated number in order to 
+        # pick the next Atari environment.
         random_number = np.random.randint(0, self._number_envs)
         print(f'Chosen random number: {random_number}')
 
@@ -62,38 +71,24 @@ class SoftResetWrapper(gym.Env):
     def render(self, mode=None):
         return self._env.render(mode=mode)
 
-        # Keep the step function and for reset, you pick another environment using the random number
-
+# Create a set of environments while preprocessing them at the same time.
 def create_set(name_envs):
     set_of_envs = np.empty([len(name_envs)], dtype=object)
     
     for i in range(len(name_envs)):
         env = gym.make(name_envs[i])
         env = PreprocessAtari(env)
-        #env = gym.wrappers.AtariPreprocessing(env, noop_max = 30, frame_skip = 4,
-        #                             screen_size = 84, terminal_on_life_loss = False,
-        #                             grayscale_obs = True,
-        #                             grayscale_newaxis = False,
-        #                             scale_obs = False)
-        # Frame stacking
-        #env = gym.wrappers.FrameStack(env, 4)
-        #env = atari_wrappers.ClipRewardEnv(env)
         set_of_envs[i] = env
 
     return set_of_envs
 
+# Create an environment (wrapper) for the Atari experiments.
+# If we only have one game, that will be the environment.
+# If we have multiple games, we will need to use the Atari Wrapper class.
 def make_env(name_envs):
     if len(name_envs) == 1:
         env = gym.make(name_envs[0])
         env = PreprocessAtari(env)
-        #env = gym.wrappers.AtariPreprocessing(env, noop_max = 30, frame_skip = 4,
-        #                             screen_size = 84, terminal_on_life_loss = False,
-        #                             grayscale_obs = True,
-        #                             grayscale_newaxis = False,
-        #                             scale_obs = False)
-        # Frame stacking
-        #env = gym.wrappers.FrameStack(env, 4)
-        #env = atari_wrappers.ClipRewardEnv(env)
     else:
         set_of_envs = create_set(name_envs)
         env = SoftResetWrapper(set_of_envs)
@@ -106,6 +101,3 @@ if __name__ == "__main__":
     print(env.reset())
     print(env.step(0))
     print(env.reset())
-    
-    #env = make_env(["SpaceInvaders-v0"])
-    #print(env.reset())

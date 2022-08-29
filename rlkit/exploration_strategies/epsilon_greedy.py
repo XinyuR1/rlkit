@@ -21,6 +21,8 @@ class EpsilonGreedy(RawExplorationStrategy):
         number += 1
         threshold = 1000000
 
+        # The value of epsilon will decrease from 1 to 0.1 in
+        # 1 million steps (threshold)
         if number <= threshold:
             epsilon -= (1-0.1)/threshold
         
