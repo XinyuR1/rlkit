@@ -1,44 +1,53 @@
-from rlkit.demos.source.hdf5_path_loader import HDF5PathLoader
-from rlkit.launchers.experiments.awac.finetune_rl import experiment, process_args
+"""
+Run IQL on Atari environments
+Experiment 3: Train on Assault, Test on Assault
+Experiment 4: Train on Space Invaders and Carnival, Test on Assault
 
-#from rlkit.launchers.launcher_util import run_experiment
+Modified from: https://github.com/rail-berkeley/rlkit/blob/master/examples/iql/antmaze_finetune.py 
+"""
+
+from rlkit.launchers.experiments.awac.finetune_rl import experiment
 from doodad.easy_launch.python_function import run_experiment
-
-from rlkit.torch.sac.policies import GaussianPolicy
-#from rlkit.torch.sac.iql_trainer import IQLTrainer
 from rlkit.torch.dqn.iql_trainer import IQLTrainer
 import rlkit.torch.pytorch_util as ptu
-
 import random
 
 variant = dict(
+    # EXPERIMENT 3
+    expl_env = ["Assault-v0"],
+    eval_env = ["Assault-v0"],
+
+    # EXPERIMENT 4
+    #expl_env = ["SpaceInvaders-v0", "Carnival-v0"],
+    #eval_env = ["Assault-v0"],
+
+
     algo_kwargs=dict(
         start_epoch=-1000, # offline epochs
-        num_epochs=4000, # online epochs
+        num_epochs=4000, # online epochs (4000)
         batch_size=256,
         num_eval_steps_per_epoch=1000,
         num_trains_per_train_loop=1000,
         num_expl_steps_per_train_loop=1000,
         min_num_steps_before_training=1000,
     ),
-    replay_buffer_size=int(5E5), #originally 2e-6
+    replay_buffer_size=int(1E5), #originally 2e-6
     max_path_length=500,
     layer_size=256,
     
     # trainer
     algorithm="DQN",
-    atari_env = "testing",
     version="normal",
     collection_mode='batch',
+    #mode = 'here_no_doodad',
+    #mode='local',
+    #mode = 'local_docker',
     mode = 'ssh',
     trainer_class=IQLTrainer,
     trainer_kwargs=dict(
         discount=0.99,
-        #policy_lr=3E-4,
-        #qf_lr=3E-4,
         reward_scale=1,
 
-        #policy_weight_decay=0,
         q_weight_decay=0,
 
         reward_transform_kwargs=dict(m=1, b=-1),
@@ -48,71 +57,22 @@ variant = dict(
         quantile=0.9,
         clip_score=100,
     ),
-    #trainer_kwargs=dict(
-    #        discount=0.99,
-    #        learning_rate=3E-4,
-    #    ),
-    
-    #policy_class=GaussianPolicy,
-    #policy_kwargs=dict(
-    #    hidden_sizes=[256, 256, ],
-    #    max_log_std=0,
-    #    min_log_std=-6,
-    #    std_architecture="values",
-    #),
-    #qf_kwargs=dict(
-    #    hidden_sizes=[256, 256, ],
-    #),
-    #exploration_kwargs=dict(
-    #    strategy = "ou",
-    #    noise = 0.1
-    #),
-
-    #Path-Loader
-    #path_loader_class=HDF5PathLoader,
-    #path_loader_kwargs=dict(),
-    #add_env_demos=False,
-    #add_env_offpolicy_data=False,
-
-    #load_demos=False,
-    #load_env_dataset_demos=True,
-
-    #normalize_env=False,
-    #env_id='CartPole-v0',
 
     seed=random.randint(0, 100000),
-    exp_name = 'IQL-exp1'
+    exp_name = 'IQL-CSI-A'
 )
 
-"""
-    #trainer_class=IQLTrainer,
-    trainer_kwargs=dict(
-        discount=0.99,
-        #policy_lr=3E-4,
-        #qf_lr=3E-4,
-        reward_scale=1,
-
-        #policy_weight_decay=0,
-        q_weight_decay=0,
-
-        reward_transform_kwargs=dict(m=1, b=-1),
-        terminal_transform_kwargs=None,
-
-        beta=0.1,
-        quantile=0.9,
-        clip_score=100,
-    ),
-    """
-
 def main():
+    # If use GPU, uncomment the following line
     ptu.set_gpu_mode(True)
+
     run_experiment(experiment,
         variant=variant,
         exp_name=variant["exp_name"],
         mode=variant["mode"],
-        ssh_host='green',
+        ssh_host='blue',
         use_gpu=True,
-        #unpack_variant=False
+        #use_gpu = False,
     )
 
 if __name__ == "__main__":

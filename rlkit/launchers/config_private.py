@@ -1,5 +1,5 @@
 ### Update this to the location you have saved the rlkit code.
-BASE_CODE_DIR = "home/Documents/Github/rlkit"
+BASE_CODE_DIR = 'TODO'
 
 CODE_DIRS_TO_MOUNT = [
 ]
@@ -41,14 +41,6 @@ SSH_HOSTS = dict(
     arcade=dict(
         username='liuronni',
         hostname='arcade'
-    ),
-    blue=dict(
-        username='ronnie',
-        hostname='blue'
-    ),
-    green=dict(
-        username='ronnie',
-        hostname='green'
     )
 )
 SSH_DEFAULT_HOST = 'arcade'

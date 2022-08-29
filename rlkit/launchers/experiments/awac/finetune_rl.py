@@ -5,7 +5,7 @@ from rlkit.data_management.split_buffer import SplitReplayBuffer
 from rlkit.exploration_strategies.epsilon_greedy import EpsilonGreedy
 from rlkit.launchers.launcher_util import setup_logger
 from rlkit.policies.argmax import ArgmaxDiscretePolicy
-from rlkit.torch.networks.custom import ConvNet1
+from rlkit.torch.networks.custom import ConvNet1, ConvNet2
 from rlkit.torch.networks.mlp import Mlp
 #from rlkit.envs.wrappers import NormalizedBoxEnv, StackObservationEnv, RewardWrapperEnv
 import rlkit.torch.pytorch_util as ptu
@@ -53,7 +53,7 @@ from rlkit.torch.networks import LinearTransform
 
 import random
 
-from stable_baselines3.common.vec_env import DummyVecEnv
+#from stable_baselines3.common.vec_env import DummyVecEnv
 from atari_kit.preprocessing import PreprocessAtari
 
 ENV_PARAMS = {
@@ -266,8 +266,8 @@ def experiment(doodad_config, variant):
     #env_class = variant.get('env_class', None)
     #env_kwargs = variant.get('env_kwargs', {})
 
-    expl_env = make_env(["SpaceInvaders-v0"])
-    eval_env = make_env(["SpaceInvaders-v0"])
+    expl_env = make_env(variant["expl_env"])
+    eval_env = make_env(variant["eval_env"])
 
     seed = int(variant["seed"])
     random.seed(seed)
@@ -289,7 +289,7 @@ def experiment(doodad_config, variant):
 
     #obs_dim = 84
     obs_dim = expl_env.observation_space.low.size
-    action_dim = eval_env.action_space.n
+    action_dim = expl_env.action_space.n
 
     #if hasattr(expl_env, 'info_sizes'):
     #    env_info_sizes = expl_env.info_sizes
@@ -421,8 +421,8 @@ def experiment(doodad_config, variant):
     algorithm.train()
     """
 
-    qf = ConvNet1(action_dim)
-    target_qf = ConvNet1(action_dim)
+    qf = ConvNet2(action_dim)
+    target_qf = ConvNet2(action_dim)
     qf_criterion = nn.MSELoss()
 
     # EVALUATION 

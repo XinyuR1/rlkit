@@ -61,7 +61,7 @@ class ConvNet2(nn.Module):
         if x_size == (84 * 84):
             x = x.view(1, 1, 84, 84)
         else:
-            x = x.view(32, 1, 84, 84)
+            x = x.view(256, 1, 84, 84)
 
         #print(f'Before Convolutions: {x.shape}')
 

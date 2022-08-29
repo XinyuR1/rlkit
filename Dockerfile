@@ -1,5 +1,5 @@
 # Base container that includes all dependencies but not the actual repo
-
+# Taken from https://github.com/Neo-X/SMiRL_Code/blob/master/Dockerfile
 ARG UBUNTU_VERSION=18.04
 ARG ARCH=
 ARG CUDA=11.3

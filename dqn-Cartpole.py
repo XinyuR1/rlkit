@@ -1,5 +1,6 @@
 """
 Run DQN on CartPole-v0.
+Modified from https://github.com/rail-berkeley/rlkit/blob/master/examples/dqn_and_double_dqn.py 
 """
 
 from atari_kit.preprocessing import PreprocessAtari
@@ -22,13 +23,6 @@ from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 
 from doodad.easy_launch.python_function import run_experiment
 
-def make_env(env_name):
-    env = gym.make(env_name)
-    env = PreprocessAtari(env)
-    
-    return env
-
-
 def experiment(doodad_config, variant):
     print('doodad_config.base_log_dir: ', doodad_config.base_log_dir)
     name = variant["exp_name"]
@@ -39,9 +33,6 @@ def experiment(doodad_config, variant):
 
     expl_env = gym.make('CartPole-v0').env
     eval_env = gym.make('CartPole-v0').env
-
-    #expl_env = make_env("SpaceInvaders-v0")
-    #eval_env = make_env("SpaceInvaders-v0")
 
     obs_dim = expl_env.observation_space.low.size
     action_dim = eval_env.action_space.n
@@ -123,11 +114,11 @@ if __name__ == "__main__":
     )
 
     ptu.set_gpu_mode(True)  # optionally set the GPU (default=False)
-    #experiment(variant)
 
     run_experiment(experiment,
                    exp_name=variant["exp_name"],
                    variant=variant,
                    mode=variant["mode"],
                    use_gpu=True,
+                   #use_gpu=False,
                    ssh_host = 'green')

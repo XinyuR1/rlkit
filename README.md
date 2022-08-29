@@ -5,13 +5,68 @@
 - SMiRL-Code: https://github.com/Neo-X/SMiRL_Code
 - Docker Images: https://hub.docker.com/repository/docker/xinyur1/rlkit
 
-## Work in Progress
-- Running an experiment with ssh mode in``Breakout-v0`` or `Space-Invaders`.
+## References
+https://github.com/rail-berkeley/rlkit 
+https://github.com/montrealrobotics/doodad
+https://github.com/Neo-X/doodad 
+https://github.com/Neo-X/SMiRL_Code
+https://colab.research.google.com/github/GiannisMitr/DQN-Atari-Breakout/blob/master/dqn_atari_breakout.ipynb#scrollTo=_IA-czvUwbOn 
 
-## Changes in the code
 
-### August 14th, 2022: Add comet_ml
-- Modify [requirements.txt](requirements.txt): add ``comet_ml`` library.
+## List of Changes for this Project
+This project uses this library's RL algorithm in order to run different experiments. Here are the list of changes that I've made compared to the original ``rlkit`` library:
+
+### [Dockerfile](Dockerfile)
+- Taken from Neo-X's fork version of Rlkit.
+- We changed the name of the virtual environment by ``env-rlkit``.
+
+### [doodad_example.py](doodad_example.py)
+- Taken from Neo-X's version of ``doodad``.
+- Dummy example in order to test the implementation of doodad before testing on Atari experiments.
+
+### [dqn-Atari.py](dqn-Atari.py)
+- Modified from the original version of ``Rlkit`` (was initially ``dqn_and_double_dqn.py``). 
+- File created for the experiments of this project.
+We essentially modified the networks Mlp to CNN and run the experiments for different Atari games instead of Cartpole.
+- Furthermore, we run the experiments using the ``doodad`` library instead of calling the ones from ``rlkit``.
+
+### [dqn-Cartpole.py](dqn-Cartpole.py)
+- Modified from the original version of ``Rlkit`` (was initially ``dqn_and_double_dqn.py``). 
+- File created for testing the DQN algorithm with a cartpole problem.
+We changed the code by running the experiment with the doodad library instead of calling the ones from ``rlkit``.
+
+### [iql-Atari.py](iql-Atari.py)
+- Modified from the original version of ``Rlkit``(``rlkit/examples/iql/antmaze_finetune.py``).
+- File created for testing the IQL algorithm for this project.
+- Initially, it was meant for environments with continuous actions (antmaze) by using the SAC algorithm. We changed the IQL algorithm by taking discrete actions (with the DQN Algorithm). Furthermore, the experiment will be run with doodad instead of rlkit's run_experiment function.
+
+### [requirements.txt](requirements.txt)
+- Taken from Neo-X's fork version of ``RLkit``.
+- Add/modify the following packages: `comet_ml`, `gym==0.18.0`, `gym[atari]`,`atari_py==0.2.6`, `opencv-python`, `pandas`, `matplotlib`
+- There will be two choices: one for CPU and one for GPU
+  - The difference will be in the docker images. They will use the same dockerfile, but the libraries in the requirements file will be different (cpu or gpu).
+  - More changes in ``doodad`` library.
+
+```
+In the requirements.txt file: 
+
+#FOR CPU (here_no_doodad, local and local_docker)
+torch
+torchvision
+
+#FOR GPU
+torch==1.10.0+cu113
+torchvision==0.11.1+cu113
+git+https://github.com/xinyur1/doodad.git
+
+--find-links https://download.pytorch.org/whl/cu113/torch_stable.html
+```
+
+
+
+
+###################################################################
+
 - Modify [logging.py](rlkit/core/logging.py):
   - Add new attribute in the logger called ``self._comet_log`` (with setters and getters for Atari experiments)
   - Change the ``record_tabular`` function the Logger class by adding comet logs and options for epochs as x axis in the comet logs.
@@ -27,47 +82,13 @@ def record_tabular(self, key, val):
             self._comet_log.log_metrics({str(self._tabular_prefix_str) + str(key): val}, epoch=epochs)
 ```
 
-### August 10th, 2022: Fix the GPU issue (GPU of the lab computer can't recognize the experiment).
-- Add new mode: ``ssh`` in order to connect to the lab computer.
-- Modify [requirements.txt](requirements.txt).
-  - There will be two choices: one for CPU and one for GPU
-  - The difference will be in the docker images. They will use the same dockerfile, but the libraries in the requirements file will be different (cpu or gpu).
-  - More changes in ``doodad`` library.
-
-```
-In the requirementx.txt file: 
-
-#FOR CPU (here_no_doodad, local and local_docker)
-torch
-torchvision
-
-#FOR GPU
-torch==1.10.0+cu113
-torchvision==0.11.1+cu113
-git+https://github.com/xinyur1/doodad.git
-
---find-links https://download.pytorch.org/whl/cu113/torch_stable.html
-```
-
-### July 27th, 2022: Running a file using doodad locally and docker on Windows.
-- Modify [Dockerfile](Dockerfile) by changing the name of the virtual environment (env-rlkit).
-- Add new mode: ``local_docker``.
-
-### July 25th, 2022: Running a file using doodad locally on Windows.
-- Add [doodad_example.py](doodad_example.py) in order to test if doodad works locally.
-- Modify [dqn-Atari.py](dqn-Atari.py) by adding a doodad base log path (using "run_experiment" function from doodad).
-
 ### July 20th, 2022: Prepare docker image.
 - Modify [conf.py](rlkit/launchers/config.py) with the local directory. It has been changed to config.py.
 - Add Dockerfile taken from SMiRL-code library.
 
 ### July 19th, 2022: Add Atari Experiments in rlkit library.
-- Add [requirements.txt](requirements.txt) taken from Neo-X's fork version of RLkit.
-  - Add/modify the following packages: `gym==0.18.0`, `gym[atari]`,`atari_py==0.2.6`, `opencv-python`, `pandas`, `matplotlib`
-- Add [dqn-Cartpole.py](dqn-Cartpole.py) and [dqn-Atari.py](dqn-Atari.py) for the experiments with DQN.
+
 - Add [atari_kit](atari_kit) repository which contains the preprocessing of images and the visualization of this process.
-- Add [name_experiment.py](name_experiment.py) in order to change the name of the experiment which initially contains the time of the experiment (which can be hard to track once we have many experiments).
-- Add [graph.py](graph.py) in order to plot the results after an experiment.
 - Modify [custom.py](rlkit/torch/networks/stochastic/custom.py)
   - Add two CNN models for the Atari Experiments
 - Modify [simply_replay_buffer.py](rlkit/data_management/simple_replay_buffer.py)
@@ -100,18 +121,11 @@ cd ../rlkit
   - Cartpole: "Cartpole-v0"
   - Atari: "Breakout-v0", "Pong-v0", "BeamRider-v0", "Seaquest-v0"
 
-
 - `<mode>`
   - ``here_no_doodad``: Run the experiment without doodad library.
   - ``local``: Run the experiment locally using doodad.
   - ``local_docker``: Run the experiment locally using doodad and docker.
 
-
-
-- `<metrics>` (integer)
-  - Select the metrics for the plot
-  - 8 for average returns, 10 for std returns and 50 for QF Loss
-  
 2. Visualize the image of the environment before and after preprocessing.
 ```
 python atari_kit/visualize.py <env-name>
@@ -124,17 +138,6 @@ python dqn-Cartpole.py
 # If Atari
 python dqn-Atari.py
 ```
-
-4. Plot the graph
-```
-python graph.py <env-name> "./data/DQN-<env-name>/<mode>/progress.csv" <num-epochs> <metrics>
-```
-
-5. Run the policy
-```
-python run_policy.py "./data/DQN-<env-name>/<mode>/params.pkl"
-```
-
 
 *****************************
 # RLkit
